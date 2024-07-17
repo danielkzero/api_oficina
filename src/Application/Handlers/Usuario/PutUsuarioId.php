@@ -25,21 +25,19 @@ class PutUsuarioId
 
             $senha = md5($body['senha']);
             $stmt = $this->pdo->prepare('UPDATE usuario SET 
-                usuario=:usuario, 
-                senha=:senha, 
-                email=:email, 
                 nome=:nome, 
-                data_nascimento=:data_nascimento, 
-                sexo=:sexo, 
-                telefone=:telefone
+                sobrenome=:sobrenome, 
+                email=:email, 
+                usuario=:usuario, 
+                senha=:senha,
+                ativo=:ativo
             WHERE id=:id');            
-            $stmt->bindParam(':usuario', $body['usuario']);
+            $stmt->bindParam(':nome', $body['usuario']);
+            $stmt->bindParam(':sobrenome', $body['usuario']);
+            $stmt->bindParam(':email', $body['usuario']);
+            $stmt->bindParam(':usuario', $body['nome']);
             $stmt->bindParam(':senha', $senha);
-            $stmt->bindParam(':email', $body['email']);
-            $stmt->bindParam(':nome', $body['nome']);
-            $stmt->bindParam(':data_nascimento', $body['data_nascimento']);
-            $stmt->bindParam(':sexo', $body['sexo']);
-            $stmt->bindParam(':telefone', $body['telefone']);
+            $stmt->bindParam(':ativo', $body['ativo']);
             $stmt->bindParam(':id', $id);
             $stmt->execute();
 

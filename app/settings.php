@@ -23,9 +23,9 @@ return function (ContainerBuilder $containerBuilder) {
                 "db" => [
                     'driver' => 'mysql',
                     'host' => 'srv540.hstgr.io',
-                    'database' => 'u616198849_rifa',
-                    'username' => 'u616198849_rifa',
-                    'password' => 'Rifa#123',
+                    'database' => 'u616198849_oficina',
+                    'username' => 'u616198849_oficina',
+                    'password' => 'Oficina#123',
                     'charset' => 'utf8mb4',
                     'collation' => 'utf8mb4_unicode_ci',
                     'flags' => [

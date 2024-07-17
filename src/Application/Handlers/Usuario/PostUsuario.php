@@ -22,16 +22,12 @@ class PostUsuario
             $body = $request->getParsedBody();
             $senha = md5($body['senha']);
             
-            $stmt = $this->pdo->prepare('INSERT INTO usuarios (nome, sobrenome, email, usuario, senha, avatar, tipo, ultimo_login) 
-            VALUES (nome, sobrenome, email, usuario, senha, avatar, tipo, ultimo_login)');
+            $stmt = $this->pdo->prepare('INSERT INTO usuarios (nome, sobrenome, email, usuario, senha) VALUES (nome, sobrenome, email, usuario, senha)');
             $stmt->bindParam(':nome', $body['nome']);
             $stmt->bindParam(':sobrenome', $body['sobrenome']);
             $stmt->bindParam(':email', $body['email']);
             $stmt->bindParam(':usuario', $body['usuario']);
             $stmt->bindParam(':senha', $senha);
-            $stmt->bindParam(':avatar', $body['avatar']);
-            $stmt->bindParam(':tipo', $body['tipo']);
-            $stmt->bindParam(':ultimo_login', $body['ultimo_login']);
             $stmt->execute();
 
             return $response->withHeader('Content-Type', 'application/json')->withJson(['success' => true]);
