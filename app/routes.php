@@ -52,18 +52,16 @@ return function (App $app) use ($validarTokenMiddleware) {
     $app->post('/login', function (Request $request, Response $response) {
         $data = $request->getParsedBody();
 
-        return $response->withJson(['success' => true, 'usuario' => $data['email']]);
-
         global $container;
 
         $settings = $container->get(SettingsInterface::class);
 
         $secret_key = $settings->get('secret_key');
 
-        $token = authenticateUser($this->get(PDO::class), $data['email'], md5($data['senha']), $secret_key);
+        $token = authenticateUser($this->get(PDO::class), $data['usuario'], md5($data['senha']), $secret_key);        
 
         if ($token) {
-            return $response->withJson(['success' => true, 'token' => $token['token'], 'usuario' => $token['usuario']]);
+            return $response->withJson(['success' => true, 'token' => $token, 'usuario' => $data['usuario']]);
         } else {
             return $response->withStatus(401)->withJson(['error' => 'Credenciais inválidas']);
         }
@@ -76,6 +74,17 @@ return function (App $app) use ($validarTokenMiddleware) {
         $app->post('', Usuario\PostUsuario::class); //POST não é protegido, porque qualquer um pode se cadastrar sem ter credencial.
         $app->put('{id}', Usuario\PutUsuarioId::class);
         $app->delete('{id}', Usuario\DeleteUsuarioId::class);
+    });
+
+
+    $app->get('/statustoken', function (Request $request, Response $response) {
+        try {
+            require_once __DIR__ . '/../src/Auth/validate.php';
+            ValidarToken($request);
+            return $response->withHeader('Content-Type', 'application/json')->withJson(['token' => true]);
+        } catch (Exception $e) {
+            return $response->withStatus($e->getCode())->withJson(['error' => $e->getMessage()]);
+        }
     });
 
     $app->options('/{routes:.+}', function ($request, $response, $args) {
