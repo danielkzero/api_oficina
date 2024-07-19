@@ -70,10 +70,10 @@ return function (App $app) use ($validarTokenMiddleware) {
 
     $app->group('/usuario', function ($app) use ($validarTokenMiddleware) {
         $app->get('', Usuario\GetUsuario::class);
-        $app->get('{id}', Usuario\GetUsuarioId::class);
-        $app->post('', Usuario\PostUsuario::class); //POST não é protegido, porque qualquer um pode se cadastrar sem ter credencial.
-        $app->put('{id}', Usuario\PutUsuarioId::class);
-        $app->delete('{id}', Usuario\DeleteUsuarioId::class);
+        $app->get('/{id}', Usuario\GetUsuarioId::class);
+        $app->post('', Usuario\PostUsuario::class); 
+        $app->put('/{id}', Usuario\PutUsuarioId::class);
+        $app->delete('/{id}', Usuario\DeleteUsuarioId::class);
     });
 
 

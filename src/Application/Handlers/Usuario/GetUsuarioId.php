@@ -19,7 +19,6 @@ class GetUsuarioId
     public function __invoke(Request $request, Response $response, $args)
     {
         try {
-            $this->validarToken($request);
             $id = $args['id'];
 
             $stmt = $this->pdo->prepare('SELECT * FROM usuarios WHERE id=:id');
@@ -33,9 +32,4 @@ class GetUsuarioId
         }
     }
 
-    private function validarToken(Request $request)
-    {
-        require_once __DIR__ . '/../../../Auth/validate.php';
-        ValidarToken($request);
-    }
 }

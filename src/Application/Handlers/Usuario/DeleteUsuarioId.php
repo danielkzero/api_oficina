@@ -18,23 +18,14 @@ class DeleteUsuarioId
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        try {
-            $this->validarToken($request);
-            $body = $request->getParsedBody();
-            
-            $stmt = $this->pdo->prepare('UPDATE usuarios SET ativo = 1 WHERE id=:id');
-            $stmt->bindParam(':id', $body['id']);
+        try {            
+            $stmt = $this->pdo->prepare('UPDATE usuarios SET excluido = 1 WHERE id=:id');
+            $stmt->bindParam(':id', $args['id']);
             $stmt->execute();
             return $response->withHeader('Content-Type', 'application/json')->withJson(['success' => true]);
 
         } catch (Exception $e) {
             return $response->withStatus($e->getCode())->withJson(['error' => $e->getMessage()]);
         }
-    }
-
-    private function validarToken(Request $request)
-    {
-        require_once __DIR__ . '/../../../Auth/validate.php';
-        ValidarToken($request);
     }
 }

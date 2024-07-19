@@ -20,13 +20,15 @@ class PostUsuario
     {
         try {
             $body = $request->getParsedBody();
+            $nome = $body['nome'];
+            $email = $body['email'];
+            $usuario = $body['usuario'];
             $senha = md5($body['senha']);
             
-            $stmt = $this->pdo->prepare('INSERT INTO usuarios (nome, sobrenome, email, usuario, senha) VALUES (nome, sobrenome, email, usuario, senha)');
-            $stmt->bindParam(':nome', $body['nome']);
-            $stmt->bindParam(':sobrenome', $body['sobrenome']);
-            $stmt->bindParam(':email', $body['email']);
-            $stmt->bindParam(':usuario', $body['usuario']);
+            $stmt = $this->pdo->prepare('INSERT INTO usuarios (nome, email, usuario, senha) VALUES (:nome, :email, :usuario, :senha)');
+            $stmt->bindParam(':nome', $nome);
+            $stmt->bindParam(':email', $email);
+            $stmt->bindParam(':usuario', $usuario);
             $stmt->bindParam(':senha', $senha);
             $stmt->execute();
 

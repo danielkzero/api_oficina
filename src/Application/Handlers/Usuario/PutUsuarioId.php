@@ -19,25 +19,24 @@ class PutUsuarioId
     public function __invoke(Request $request, Response $response, $args)
     {
         try {
-            $this->validarToken($request);
             $id = $args['id'];
             $body = $request->getParsedBody();
 
+            $nome = $body['nome'];
+            $email = $body['email'];
+            $usuario = $body['usuario'];
             $senha = md5($body['senha']);
-            $stmt = $this->pdo->prepare('UPDATE usuario SET 
+
+            $stmt = $this->pdo->prepare('UPDATE usuarios SET 
                 nome=:nome, 
-                sobrenome=:sobrenome, 
                 email=:email, 
                 usuario=:usuario, 
-                senha=:senha,
-                ativo=:ativo
+                senha=:senha
             WHERE id=:id');            
-            $stmt->bindParam(':nome', $body['usuario']);
-            $stmt->bindParam(':sobrenome', $body['usuario']);
-            $stmt->bindParam(':email', $body['usuario']);
-            $stmt->bindParam(':usuario', $body['nome']);
+            $stmt->bindParam(':nome', $nome);
+            $stmt->bindParam(':email', $email);
+            $stmt->bindParam(':usuario', $usuario);
             $stmt->bindParam(':senha', $senha);
-            $stmt->bindParam(':ativo', $body['ativo']);
             $stmt->bindParam(':id', $id);
             $stmt->execute();
 
@@ -48,9 +47,4 @@ class PutUsuarioId
         }
     }
 
-    private function validarToken(Request $request)
-    {
-        require_once __DIR__ . '/../../../Auth/validate.php';
-        ValidarToken($request);
-    }
 }
