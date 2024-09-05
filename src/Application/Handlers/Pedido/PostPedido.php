@@ -1,5 +1,5 @@
 <?php
-namespace App\Application\Handlers\Pedidos;
+namespace App\Application\Handlers\Pedido;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
