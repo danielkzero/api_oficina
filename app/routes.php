@@ -149,6 +149,52 @@ return function (App $app) use ($validarTokenMiddleware) {
         $app->delete('/{id}', ICMS_ST\DeleteICMS_ST::class)->use($validarTokenMiddleware);
     });
 
+    $app->group('/pedido', function ($app) use ($validarTokenMiddleware) {
+        $app->get('', Pedido\GetPedido::class)->use($validarTokenMiddleware); 
+        $app->get('/{id}', Pedido\GetPedidoById::class)->use($validarTokenMiddleware); 
+        $app->post('', Pedido\PostPedido::class)->use($validarTokenMiddleware); 
+        $app->put('/{id}', Pedido\PutPedido::class)->use($validarTokenMiddleware);
+        $app->delete('/{id}', Pedido\DeletePedido::class)->use($validarTokenMiddleware);
+    });
+
+    $app->group('/produto', function ($app) use ($validarTokenMiddleware) {
+        $app->get('', Produto\GetProdutos::class)->use($validarTokenMiddleware); 
+        $app->get('/{id}', Produto\GetProdutoById::class)->use($validarTokenMiddleware); 
+        $app->post('', Produto\PostProduto::class)->use($validarTokenMiddleware); 
+        $app->put('/{id}', Produto\PutProduto::class)->use($validarTokenMiddleware);
+        $app->delete('/{id}', Produto\DeleteProduto::class)->use($validarTokenMiddleware);
+    });
+
+    $app->group('/produto_categoria', function ($app) use ($validarTokenMiddleware) {
+        $app->get('', ProdutoCategoria\GetProdutoCategoria::class)->use($validarTokenMiddleware); 
+        $app->get('/{id}', ProdutoCategoria\GetProdutoCategoriaById::class)->use($validarTokenMiddleware); 
+        $app->post('', ProdutoCategoria\PostProdutoCategoria::class)->use($validarTokenMiddleware); 
+        $app->put('/{id}', ProdutoCategoria\PutProdutoCategoria::class)->use($validarTokenMiddleware);
+        $app->delete('/{id}', ProdutoCategoria\DeleteProdutoCategoria::class)->use($validarTokenMiddleware);
+    });
+
+    $app->group('/produto_imagem', function ($app) use ($validarTokenMiddleware) {
+        $app->get('', ProdutoImagem\GetProdutoImagem::class)->use($validarTokenMiddleware); 
+        $app->get('/{id}', ProdutoImagem\GetProdutoImagemById::class)->use($validarTokenMiddleware); 
+        $app->post('', ProdutoImagem\PostProdutoImagem::class)->use($validarTokenMiddleware); 
+        $app->put('/{id}', ProdutoImagem\PutProdutoImagem::class)->use($validarTokenMiddleware);
+        $app->delete('/{id}', ProdutoImagem\DeleteProdutoImagem::class)->use($validarTokenMiddleware);
+    });
+
+    $app->group('/tabela_preco', function ($app) use ($validarTokenMiddleware) {
+        $app->get('', TabelaPreco\GetTabelaPreco::class)->use($validarTokenMiddleware); 
+        $app->post('', TabelaPreco\PostTabelaPreco::class)->use($validarTokenMiddleware); 
+        $app->put('/{id}', TabelaPreco\PutTabelaPreco::class)->use($validarTokenMiddleware);
+        $app->delete('/{id}', TabelaPreco\DeleteTabelaPreco::class)->use($validarTokenMiddleware);
+    });
+
+    $app->group('/tabela_produto_preco', function ($app) use ($validarTokenMiddleware) {
+        $app->get('', TabelaProdutoPreco\GetTabelaProdutoPreco::class)->use($validarTokenMiddleware); 
+        $app->post('', TabelaProdutoPreco\PostTabelaProdutoPreco::class)->use($validarTokenMiddleware); 
+        $app->put('/{id}', TabelaProdutoPreco\PutTabelaProdutoPreco::class)->use($validarTokenMiddleware);
+        $app->delete('/{id}', TabelaProdutoPreco\DeleteTabelaProdutoPreco::class)->use($validarTokenMiddleware);
+    });
+
     $app->group('/usuario', function ($app) use ($validarTokenMiddleware) {
         $app->get('', Usuario\GetUsuario::class);
         $app->get('/{id}', Usuario\GetUsuarioId::class);
