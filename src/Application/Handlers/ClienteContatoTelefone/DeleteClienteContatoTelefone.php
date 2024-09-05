@@ -6,7 +6,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Exception;
 use PDO;
 
-class PostClienteContatoTelefone
+class DeleteClienteContatoTelefone
 {
     private $pdo;
 
@@ -18,19 +18,13 @@ class PostClienteContatoTelefone
     public function __invoke(Request $request, Response $response, $args)
     {
         try {
-            $contato_id = (int)$args['contato_id'];
-            $data = $request->getParsedBody();
-            
-            $numero = $data['numero'];
-            $tipo = $data['tipo'];
+            $telefone_id = (int)$args['telefone_id'];
 
-            $stmt = $this->pdo->prepare("INSERT INTO cliente_contato_telefone (contato_id, numero, tipo) VALUES (:contato_id, :numero, :tipo)");
-            $stmt->bindParam(':contato_id', $contato_id);
-            $stmt->bindParam(':numero', $numero);
-            $stmt->bindParam(':tipo', $tipo);
+            $stmt = $this->pdo->prepare("DELETE FROM cliente_contato_telefone WHERE id = :id");
+            $stmt->bindParam(':id', $telefone_id);
 
             if ($stmt->execute()) {
-                return $response->withHeader('Content-Type', 'application/json')->withJson(['status' => 'success'], 201);
+                return $response->withHeader('Content-Type', 'application/json')->withJson(['status' => 'success'], 200);
             } else {
                 return $response->withHeader('Content-Type', 'application/json')->withJson(['status' => 'error'], 500);
             }

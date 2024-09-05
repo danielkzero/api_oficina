@@ -1,12 +1,12 @@
 <?php
-namespace App\Application\Handlers\ClienteContato;
+namespace App\Application\Handlers\ClienteContatoEmail;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Exception;
 use PDO;
 
-class PostClienteContato
+class PutClienteContatoEmail
 {
     private $pdo;
 
@@ -18,21 +18,19 @@ class PostClienteContato
     public function __invoke(Request $request, Response $response, $args)
     {
         try {
-            $cliente_id = (int)$args['cliente_id'];
+            $contato_email_id = (int)$args['contato_email_id'];
             $data = $request->getParsedBody();
             
-            $nome = $data['nome'];
-            $cargo = $data['cargo'];
-            $excluido = false;
+            $email = $data['email'];
+            $tipo = $data['tipo'];
 
-            $stmt = $this->pdo->prepare("INSERT INTO cliente_contato (cliente_id, nome, cargo, excluido) VALUES (:cliente_id, :nome, :cargo, :excluido)");
-            $stmt->bindParam(':cliente_id', $cliente_id);
-            $stmt->bindParam(':nome', $nome);
-            $stmt->bindParam(':cargo', $cargo);
-            $stmt->bindParam(':excluido', $excluido);
+            $stmt = $this->pdo->prepare("UPDATE cliente_contato_email SET email = :email, tipo = :tipo WHERE id = :id");
+            $stmt->bindParam(':email', $email);
+            $stmt->bindParam(':tipo', $tipo);
+            $stmt->bindParam(':id', $contato_email_id);
 
             if ($stmt->execute()) {
-                return $response->withHeader('Content-Type', 'application/json')->withJson(['status' => 'success'], 201);
+                return $response->withHeader('Content-Type', 'application/json')->withJson(['status' => 'success'], 200);
             } else {
                 return $response->withHeader('Content-Type', 'application/json')->withJson(['status' => 'error'], 500);
             }

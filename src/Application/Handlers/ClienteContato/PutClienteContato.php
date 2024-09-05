@@ -6,7 +6,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Exception;
 use PDO;
 
-class PostClienteContato
+class PutClienteContato
 {
     private $pdo;
 
@@ -18,21 +18,19 @@ class PostClienteContato
     public function __invoke(Request $request, Response $response, $args)
     {
         try {
-            $cliente_id = (int)$args['cliente_id'];
+            $contato_id = (int)$args['contato_id'];
             $data = $request->getParsedBody();
             
             $nome = $data['nome'];
             $cargo = $data['cargo'];
-            $excluido = false;
 
-            $stmt = $this->pdo->prepare("INSERT INTO cliente_contato (cliente_id, nome, cargo, excluido) VALUES (:cliente_id, :nome, :cargo, :excluido)");
-            $stmt->bindParam(':cliente_id', $cliente_id);
+            $stmt = $this->pdo->prepare("UPDATE cliente_contato SET nome = :nome, cargo = :cargo WHERE id = :id");
             $stmt->bindParam(':nome', $nome);
             $stmt->bindParam(':cargo', $cargo);
-            $stmt->bindParam(':excluido', $excluido);
+            $stmt->bindParam(':id', $contato_id);
 
             if ($stmt->execute()) {
-                return $response->withHeader('Content-Type', 'application/json')->withJson(['status' => 'success'], 201);
+                return $response->withHeader('Content-Type', 'application/json')->withJson(['status' => 'success'], 200);
             } else {
                 return $response->withHeader('Content-Type', 'application/json')->withJson(['status' => 'error'], 500);
             }

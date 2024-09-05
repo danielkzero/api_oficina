@@ -18,15 +18,18 @@ class DeleteCliente
     public function __invoke(Request $request, Response $response, $args)
     {
         try {
-            $id = (int) $args['id'];
+            $cliente_id = (int) $args['id'];
 
-            $stmt = $this->pdo->prepare("DELETE FROM cliente WHERE id = :id");
-            $stmt->bindParam(':id', $id);        
+            $stmt = $this->pdo->prepare("
+                DELETE FROM cliente
+                WHERE id = :id
+            ");
+            $stmt->execute([':id' => $cliente_id]); 
 
             if ($stmt->execute()) {
-                return $response->withHeader('Content-Type', 'application/json')->withJson(['status' => 'success']);
+                return $response->withHeader('Content-Type', 'application/json')->withJson(['message' => 'Cliente excluído com sucesso'], 200);
             } else {
-                return $response->withHeader('Content-Type', 'application/json')->withJson(['status' => 'error'], 500);
+                return $response->withHeader('Content-Type', 'application/json')->withJson(['error' => 'Cliente não encontrado'], 404);
             }
         } catch (Exception $e) {
             return $response->withStatus($e->getCode())->withJson(['error' => $e->getMessage()]);

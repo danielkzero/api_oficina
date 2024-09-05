@@ -6,7 +6,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Exception;
 use PDO;
 
-class PostClienteEndereco
+class PutClienteEndereco
 {
     private $pdo;
 
@@ -18,7 +18,7 @@ class PostClienteEndereco
     public function __invoke(Request $request, Response $response, $args)
     {
         try {
-            $cliente_id = (int)$args['cliente_id'];
+            $endereco_id = (int)$args['endereco_id'];
             $data = $request->getParsedBody();
             
             $endereco = $data['endereco'];
@@ -30,8 +30,7 @@ class PostClienteEndereco
             $cep = $data['cep'] ?? null;
             $ultima_alteracao = $data['ultima_alteracao'];
 
-            $stmt = $this->pdo->prepare("INSERT INTO cliente_endereco (cliente_id, endereco, numero, complemento, bairro, cidade, estado, cep, ultima_alteracao) VALUES (:cliente_id, :endereco, :numero, :complemento, :bairro, :cidade, :estado, :cep, :ultima_alteracao)");
-            $stmt->bindParam(':cliente_id', $cliente_id);
+            $stmt = $this->pdo->prepare("UPDATE cliente_endereco SET endereco = :endereco, numero = :numero, complemento = :complemento, bairro = :bairro, cidade = :cidade, estado = :estado, cep = :cep, ultima_alteracao = :ultima_alteracao WHERE id = :id");
             $stmt->bindParam(':endereco', $endereco);
             $stmt->bindParam(':numero', $numero);
             $stmt->bindParam(':complemento', $complemento);
@@ -40,9 +39,10 @@ class PostClienteEndereco
             $stmt->bindParam(':estado', $estado);
             $stmt->bindParam(':cep', $cep);
             $stmt->bindParam(':ultima_alteracao', $ultima_alteracao);
+            $stmt->bindParam(':id', $endereco_id);
 
             if ($stmt->execute()) {
-                return $response->withHeader('Content-Type', 'application/json')->withJson(['status' => 'success'], 201);
+                return $response->withHeader('Content-Type', 'application/json')->withJson(['status' => 'success'], 200);
             } else {
                 return $response->withHeader('Content-Type', 'application/json')->withJson(['status' => 'error'], 500);
             }
