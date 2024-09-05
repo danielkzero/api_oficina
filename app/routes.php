@@ -142,6 +142,13 @@ return function (App $app) use ($validarTokenMiddleware) {
         $app->delete('/{id}', FormaPagamento\DeleteFormaPagamento::class)->use($validarTokenMiddleware);
     });
 
+    $app->group('/icms_st', function ($app) use ($validarTokenMiddleware) {
+        $app->get('/{id}', ICMS_ST\GetICMS_STById::class)->use($validarTokenMiddleware); 
+        $app->post('', ICMS_ST\PostICMS_ST::class)->use($validarTokenMiddleware); 
+        $app->put('/{id}', ICMS_ST\PutICMS_ST::class)->use($validarTokenMiddleware);
+        $app->delete('/{id}', ICMS_ST\DeleteICMS_ST::class)->use($validarTokenMiddleware);
+    });
+
     $app->group('/usuario', function ($app) use ($validarTokenMiddleware) {
         $app->get('', Usuario\GetUsuario::class);
         $app->get('/{id}', Usuario\GetUsuarioId::class);
