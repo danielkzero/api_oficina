@@ -1,12 +1,12 @@
 <?php
-namespace App\Application\Handlers\ProdutoPreco;
+namespace App\Application\Handlers\TabelaProdutoPreco;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Exception;
 use PDO;
 
-class PutProdutoPreco
+class PostTabelaProdutoPreco
 {
     private $pdo;
 
@@ -18,7 +18,6 @@ class PutProdutoPreco
     public function __invoke(Request $request, Response $response, $args)
     {
         try {
-            $id = (int) $args['id'];
             $data = $request->getParsedBody();
 
             $tabela_id = (int) $data['tabela_id'];
@@ -27,8 +26,7 @@ class PutProdutoPreco
             $ultima_alteracao = $data['ultima_alteracao'];
             $excluido = isset($data['excluido']) ? (bool) $data['excluido'] : false;
 
-            $stmt = $this->pdo->prepare("UPDATE tabela_preco_produto SET tabela_id = :tabela_id, produto_id = :produto_id, preco = :preco, ultima_alteracao = :ultima_alteracao, excluido = :excluido WHERE id = :id");
-            $stmt->bindParam(':id', $id);
+            $stmt = $this->pdo->prepare("INSERT INTO tabela_preco_produto (tabela_id, produto_id, preco, ultima_alteracao, excluido) VALUES (:tabela_id, :produto_id, :preco, :ultima_alteracao, :excluido)");
             $stmt->bindParam(':tabela_id', $tabela_id);
             $stmt->bindParam(':produto_id', $produto_id);
             $stmt->bindParam(':preco', $preco);

@@ -1,12 +1,12 @@
 <?php
-namespace App\Application\Handlers\ProdutoPreco;
+namespace App\Application\Handlers\TabelaProdutoPreco;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Exception;
 use PDO;
 
-class GetProdutoPreco
+class GetTabelaProdutoPreco
 {
     private $pdo;
 
