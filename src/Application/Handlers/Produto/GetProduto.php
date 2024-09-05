@@ -1,13 +1,12 @@
 <?php
-//routes.php
-namespace App\Application\Handlers\Campanha;
+namespace App\Application\Handlers\Produto;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Exception;
 use PDO;
 
-class GetCampanhaDestaque
+class GetProduto
 {
     private $pdo;
 
@@ -18,11 +17,10 @@ class GetCampanhaDestaque
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        try {
-            $stmt = $this->pdo->prepare('SELECT * FROM campanhas WHERE excluido=0 AND sorteio_destaque=1 AND publicado=1 LIMIT 1');
+        try {            
+            $stmt = $this->pdo->prepare("SELECT * FROM produto");
             $stmt->execute();
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
             return $response->withHeader('Content-Type', 'application/json')->withJson($result);
         } catch (Exception $e) {
             return $response->withStatus($e->getCode())->withJson(['error' => $e->getMessage()]);

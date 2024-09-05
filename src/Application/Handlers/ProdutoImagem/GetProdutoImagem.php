@@ -1,13 +1,12 @@
 <?php
-//routes.php
-namespace App\Application\Handlers\Campanha;
+namespace App\Application\Handlers\ProdutoImagem;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Exception;
 use PDO;
 
-class GetCampanha
+class GetProdutoImagem
 {
     private $pdo;
 
@@ -19,11 +18,14 @@ class GetCampanha
     public function __invoke(Request $request, Response $response, $args)
     {
         try {
-            $stmt = $this->pdo->prepare('SELECT * FROM campanhas WHERE encerrada=0');
+            $produto_id = (int)$args['id'];
+        
+            $stmt = $this->pdo->prepare("SELECT * FROM produto_imagem WHERE produto_id = :produto_id ORDER BY ordem");
+            $stmt->bindParam(':produto_id', $produto_id);
             $stmt->execute();
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            return $response->withHeader('Content-Type', 'application/json')->withJson($result);
+            $imagens = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $response->withHeader('Content-Type', 'application/json')->withJson($imagens);
         } catch (Exception $e) {
             return $response->withStatus($e->getCode())->withJson(['error' => $e->getMessage()]);
         }

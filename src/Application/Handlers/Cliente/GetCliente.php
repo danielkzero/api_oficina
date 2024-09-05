@@ -1,13 +1,12 @@
 <?php
-//routes.php
-namespace App\Application\Handlers\Campanha;
+namespace App\Application\Handlers\Cliente;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Exception;
 use PDO;
 
-class GetCampanhaEncerrada
+class GetCliente
 {
     private $pdo;
 
@@ -18,12 +17,11 @@ class GetCampanhaEncerrada
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        try {            
-            $stmt = $this->pdo->prepare('SELECT * FROM campanhas WHERE encerrada=1 AND publicado=1');
-            $stmt->execute();
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $stmt = $this->pdo->prepare("SELECT * FROM cliente");
+            $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            return $response->withHeader('Content-Type', 'application/json')->withJson($result);
+            return $response->withHeader('Content-Type', 'application/json')->withJson($clientes);
         } catch (Exception $e) {
             return $response->withStatus($e->getCode())->withJson(['error' => $e->getMessage()]);
         }

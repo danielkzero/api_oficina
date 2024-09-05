@@ -1,13 +1,12 @@
 <?php
-//routes.php
-namespace App\Application\Handlers\InformacaoSistema;
+namespace App\Application\Handlers\ProdutoPreco;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Exception;
 use PDO;
 
-class GetInformacaoSistema
+class GetProdutoPreco
 {
     private $pdo;
 
@@ -19,11 +18,12 @@ class GetInformacaoSistema
     public function __invoke(Request $request, Response $response, $args)
     {
         try {
-            $stmt = $this->pdo->prepare('SELECT * FROM informacoes_sistema');
-            $stmt->execute();
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $id = (int) $args['id'];
 
-            return $response->withHeader('Content-Type', 'application/json')->withJson($result);
+            $stmt = $this->pdo->prepare("SELECT * FROM tabela_preco_produto");
+            $precosProdutos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $response->withHeader('Content-Type', 'application/json')->withJson($precosProdutos);
         } catch (Exception $e) {
             return $response->withStatus($e->getCode())->withJson(['error' => $e->getMessage()]);
         }
