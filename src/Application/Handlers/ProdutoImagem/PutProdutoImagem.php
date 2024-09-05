@@ -5,7 +5,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use PDO;
 
-class PostProdutoImagem
+class PutProdutoImagem
 {
     private $pdo;
 
@@ -14,20 +14,20 @@ class PostProdutoImagem
         $this->pdo = $pdo;
     }
 
-    public function __invoke(Request $request, Response $response)
+    public function __invoke(Request $request, Response $response, $args)
     {
+        $id = (int)$args['id'];
         $data = $request->getParsedBody();
 
-        $stmt = $this->pdo->prepare("INSERT INTO produto_imagem (produto_id, imagem_base64, ordem) VALUES (:produto_id, :imagem_base64, :ordem)");
+        $stmt = $this->pdo->prepare("UPDATE produto_imagem SET produto_id = :produto_id, imagem_base64 = :imagem_base64, ordem = :ordem WHERE id = :id");
 
         $stmt->execute([
             ':produto_id' => $data['produto_id'],
             ':imagem_base64' => $data['imagem_base64'],
-            ':ordem' => $data['ordem']
+            ':ordem' => $data['ordem'],
+            ':id' => $id
         ]);
 
-        $id = $this->pdo->lastInsertId();
-
-        return $response->withHeader('Content-Type', 'application/json')->withJson(['status' => 'Imagem adicionada com sucesso', 'id' => $id]);
+        return $response->withHeader('Content-Type', 'application/json')->withJson(['status' => 'Imagem atualizada com sucesso']);
     }
 }
