@@ -53,7 +53,24 @@ return function (App $app) use ($validarTokenMiddleware) {
     $app->get('/', function (Request $request, Response $response) {
         $response
             ->getBody()
-            ->write('<strong>GESTOR MOBILE ONLINE 2024</strong> - v.1');
+            ->write('
+            <div class="versao-display">
+                <strong>GESTOR MOBILE ONLINE 2024 • v.1.0.0</strong>
+            </div>
+            <style>
+                body, html {
+                    margin: 0px; 
+                    padding: 0px;
+                    font-family: arial;
+                }
+                .versao-display {
+                    display: flex; 
+                    justify-content: center; 
+                    align-items: center; 
+                    height: 100vh; 
+                    width: 100%;
+                }
+            </style>');
         return $response;
     });
 
