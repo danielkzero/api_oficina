@@ -17,9 +17,7 @@ class GetTabelaPreco
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        try {
-            $produto_id = (int)$args['id'];
-        
+        try {        
             $stmt = $this->pdo->prepare("SELECT * FROM tabela_preco");
             $stmt->bindParam(':produto_id', $produto_id);
             $stmt->execute();

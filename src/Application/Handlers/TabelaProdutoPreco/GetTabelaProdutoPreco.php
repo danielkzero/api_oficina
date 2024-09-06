@@ -18,8 +18,6 @@ class GetTabelaProdutoPreco
     public function __invoke(Request $request, Response $response, $args)
     {
         try {
-            $id = (int) $args['id'];
-
             $stmt = $this->pdo->prepare("SELECT * FROM tabela_preco_produto");
             $precosProdutos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

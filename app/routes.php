@@ -175,7 +175,7 @@ return function (App $app) use ($validarTokenMiddleware) {
 
     $app->group('/produto_imagem', function ($app) use ($validarTokenMiddleware) {
         $app->get('', ProdutoImagem\GetProdutoImagem::class)->use($validarTokenMiddleware); 
-        $app->get('/{id}', ProdutoImagem\GetProdutoImagemById::class)->use($validarTokenMiddleware); 
+        $app->get('/{produto_id}', ProdutoImagem\GetProdutoImagemByIdProduto::class)->use($validarTokenMiddleware); 
         $app->post('', ProdutoImagem\PostProdutoImagem::class)->use($validarTokenMiddleware); 
         $app->put('/{id}', ProdutoImagem\PutProdutoImagem::class)->use($validarTokenMiddleware);
         $app->delete('/{id}', ProdutoImagem\DeleteProdutoImagem::class)->use($validarTokenMiddleware);
