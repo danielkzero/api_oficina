@@ -22,7 +22,7 @@
         }
     ],
     "require": {
-        "php": "7.4.*",
+        "php": ">=7.4",
         "ext-json": "*",
         "firebase/php-jwt": "^6.9",
         "guzzlehttp/guzzle": "^7.8",
@@ -62,7 +62,7 @@
         }
     },
     "scripts": {
-        "start": "php -S localhost:8080 -t public",
+        "start": "php -S localhost:8083 -t public",
         "test": "phpunit"
     }
 }
