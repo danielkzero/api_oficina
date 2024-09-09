@@ -27,7 +27,7 @@ class PutUsuarioId
             $usuario = $body['usuario'];
             $senha = md5($body['senha']);
 
-            $stmt = $this->pdo->prepare('UPDATE usuarios SET 
+            $stmt = $this->pdo->prepare('UPDATE usuario SET 
                 nome=:nome, 
                 email=:email, 
                 usuario=:usuario, 

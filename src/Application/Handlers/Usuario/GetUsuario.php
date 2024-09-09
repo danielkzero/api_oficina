@@ -19,7 +19,7 @@ class GetUsuario
     public function __invoke(Request $request, Response $response, $args)
     {
         try {            
-            $stmt = $this->pdo->prepare('SELECT * FROM usuarios WHERE excluido = 0');
+            $stmt = $this->pdo->prepare('SELECT * FROM usuario WHERE excluido = 0');
             $stmt->execute();
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

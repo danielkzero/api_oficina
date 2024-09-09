@@ -25,7 +25,7 @@ class PostUsuario
             $usuario = $body['usuario'];
             $senha = md5($body['senha']);
             
-            $stmt = $this->pdo->prepare('INSERT INTO usuarios (nome, email, usuario, senha) VALUES (:nome, :email, :usuario, :senha)');
+            $stmt = $this->pdo->prepare('INSERT INTO usuario (nome, email, usuario, senha) VALUES (:nome, :email, :usuario, :senha)');
             $stmt->bindParam(':nome', $nome);
             $stmt->bindParam(':email', $email);
             $stmt->bindParam(':usuario', $usuario);

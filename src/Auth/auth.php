@@ -17,7 +17,7 @@ function generate_jwt_token($user_id, $secret_key) {
 
 function authenticateUser(PDO $pdo, string $usuario, string $senha, string $secret_key): ?string
 {
-    $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE usuario = :usuario AND senha = :senha");
+    $stmt = $pdo->prepare("SELECT * FROM usuario WHERE usuario = :usuario AND senha = :senha");
     $stmt->bindParam(':usuario', $usuario);
     $stmt->bindParam(':senha', $senha);
     $stmt->execute();

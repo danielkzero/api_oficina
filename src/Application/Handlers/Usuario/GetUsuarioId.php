@@ -21,7 +21,7 @@ class GetUsuarioId
         try {
             $id = $args['id'];
 
-            $stmt = $this->pdo->prepare('SELECT * FROM usuarios WHERE id=:id');
+            $stmt = $this->pdo->prepare('SELECT * FROM usuario WHERE id=:id');
             $stmt->bindParam(':id', $id);
             $stmt->execute();
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);

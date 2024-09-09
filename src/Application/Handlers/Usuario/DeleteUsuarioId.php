@@ -19,7 +19,7 @@ class DeleteUsuarioId
     public function __invoke(Request $request, Response $response, $args)
     {
         try {            
-            $stmt = $this->pdo->prepare('UPDATE usuarios SET excluido = 1 WHERE id=:id');
+            $stmt = $this->pdo->prepare('UPDATE usuario SET excluido = 1 WHERE id=:id');
             $stmt->bindParam(':id', $args['id']);
             $stmt->execute();
             return $response->withHeader('Content-Type', 'application/json')->withJson(['success' => true]);
