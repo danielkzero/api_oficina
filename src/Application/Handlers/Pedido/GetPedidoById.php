@@ -23,7 +23,7 @@ class GetPedidoById
                    e.endereco, e.numero, e.complemento, e.bairro, e.cidade, e.estado, e.cep, 
                    i.id AS item_id, i.quantidade, i.preco_tabela, i.ipi, i.observacoes, i.st, i.produto_id, i.excluido AS item_excluido, i.subtotal, i.preco_liquido, 
                    d.desconto AS item_desconto 
-            FROM pedidos p
+            FROM pedido p
             LEFT JOIN pedido_endereco_entrega e ON p.id = e.pedido_id
             LEFT JOIN pedido_item i ON p.id = i.pedido_id
             LEFT JOIN pedido_item_desconto d ON i.id = d.pedido_item_id

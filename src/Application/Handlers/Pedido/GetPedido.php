@@ -17,11 +17,12 @@ class GetPedido
     public function __invoke(Request $request, Response $response, $args)
     {
         $stmt = $this->pdo->prepare("
-            SELECT p.*, 
+            SELECT p.*, c.razao_social, c.nome_fantasia, 
                    e.endereco, e.numero, e.complemento, e.bairro, e.cidade, e.estado, e.cep, 
                    i.id AS item_id, i.quantidade, i.preco_tabela, i.ipi, i.observacoes, i.st, i.produto_id, i.excluido AS item_excluido, i.subtotal, i.preco_liquido, 
                    d.desconto AS item_desconto 
-            FROM pedidos p
+            FROM pedido p
+            LEFT JOIN cliente c ON c.id = cliente_id 
             LEFT JOIN pedido_endereco_entrega e ON p.id = e.pedido_id
             LEFT JOIN pedido_item i ON p.id = i.pedido_id
             LEFT JOIN pedido_item_desconto d ON i.id = d.pedido_item_id
@@ -37,6 +38,8 @@ class GetPedido
                 $pedidosOrganizados[$pedido['id']] = [
                     'id' => $pedido['id'],
                     'cliente_id' => $pedido['cliente_id'],
+                    'razao_social' => $pedido['razao_social'],
+                    'nome_fantasia' => $pedido['nome_fantasia'],
                     'status' => $pedido['status'],
                     'condicao_pagamento' => $pedido['condicao_pagamento'],
                     'forma_pagamento_id' => $pedido['forma_pagamento_id'],

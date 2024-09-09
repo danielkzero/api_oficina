@@ -24,7 +24,7 @@ class PostPedido
 
             // Insert Pedido
             $stmt = $this->pdo->prepare("
-                INSERT INTO pedidos (cliente_id, status, condicao_pagamento, forma_pagamento_id, tipo_pedido_id, nome_contato, status_faturamento, observacoes, numero, data_criacao, ultima_alteracao, condicao_pagamento_id, data_emissao, total, criador_id)
+                INSERT INTO pedido (cliente_id, status, condicao_pagamento, forma_pagamento_id, tipo_pedido_id, nome_contato, status_faturamento, observacoes, numero, data_criacao, ultima_alteracao, condicao_pagamento_id, data_emissao, total, criador_id)
                 VALUES (:cliente_id, :status, :condicao_pagamento, :forma_pagamento_id, :tipo_pedido_id, :nome_contato, :status_faturamento, :observacoes, :numero, NOW(), NOW(), :condicao_pagamento_id, :data_emissao, :total, :criador_id)
             ");
             $stmt->execute([

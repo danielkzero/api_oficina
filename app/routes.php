@@ -95,10 +95,11 @@ return function (App $app) use ($validarTokenMiddleware) {
 
     $app->group('/cliente', function ($app) use ($validarTokenMiddleware) {
         $app->get('/{id}', Cliente\GetClienteById::class);
+        $app->get('', Cliente\GetCliente::class);
         $app->post('', Cliente\PostCliente::class); 
         $app->put('/{id}', Cliente\PutCliente::class);
         $app->delete('/{id}', Cliente\DeleteCliente::class);
-    })->add($validarTokenMiddleware);
+    });
 
     $app->group('/cliente_contato', function ($app) use ($validarTokenMiddleware) {
         $app->post('', ClienteContato\PostClienteContato::class); 
@@ -169,7 +170,7 @@ return function (App $app) use ($validarTokenMiddleware) {
         $app->post('', Pedido\PostPedido::class); 
         $app->put('/{id}', Pedido\PutPedido::class);
         $app->delete('/{id}', Pedido\DeletePedido::class);
-    })->add($validarTokenMiddleware);
+    });
 
     $app->group('/produto', function ($app) use ($validarTokenMiddleware) {
         $app->get('', Produto\GetProdutos::class); 
@@ -177,7 +178,7 @@ return function (App $app) use ($validarTokenMiddleware) {
         $app->post('', Produto\PostProduto::class); 
         $app->put('/{id}', Produto\PutProduto::class);
         $app->delete('/{id}', Produto\DeleteProduto::class);
-    })->add($validarTokenMiddleware);
+    });
 
     $app->group('/produto_categoria', function ($app) use ($validarTokenMiddleware) {
         $app->get('', ProdutoCategoria\GetProdutoCategoria::class); 

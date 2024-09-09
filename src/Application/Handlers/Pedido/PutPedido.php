@@ -25,7 +25,7 @@ class PutPedido
 
             // Update Pedido
             $stmt = $this->pdo->prepare("
-                UPDATE pedidos 
+                UPDATE pedido 
                 SET cliente_id = :cliente_id, status = :status, condicao_pagamento = :condicao_pagamento, forma_pagamento_id = :forma_pagamento_id, tipo_pedido_id = :tipo_pedido_id, nome_contato = :nome_contato, status_faturamento = :status_faturamento, observacoes = :observacoes, numero = :numero, ultima_alteracao = NOW(), condicao_pagamento_id = :condicao_pagamento_id, data_emissao = :data_emissao, total = :total, criador_id = :criador_id
                 WHERE id = :id
             ");
