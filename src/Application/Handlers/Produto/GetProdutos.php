@@ -23,7 +23,7 @@ class GetProdutos
             $limit = isset($queryParams['limit']) ? (int) $queryParams['limit'] : 10;
             $offset = isset($queryParams['offset']) ? (int) $queryParams['offset'] : 0;
 
-            // Construir a consulta SQL com base nos parâmetros
+            // Construir a consulta SQL para os produtos
             $sql = 'SELECT * FROM produto WHERE excluido = 0';
             if (!empty($busca)) {
                 $sql .= ' AND (nome LIKE :busca OR codigo LIKE :busca)';
@@ -40,7 +40,21 @@ class GetProdutos
             $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
 
             $stmt->execute();
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Para cada produto, buscar suas imagens
+            foreach ($produtos as &$produto) {
+                $produtoId = $produto['id'];
+                
+                // Buscar as imagens do produto na tabela produto_imagem
+                $imagemStmt = $this->pdo->prepare('SELECT imagem_base64, ordem FROM produto_imagem WHERE produto_id = :produto_id ORDER BY ordem ASC');
+                $imagemStmt->bindValue(':produto_id', $produtoId, PDO::PARAM_INT);
+                $imagemStmt->execute();
+                $imagens = $imagemStmt->fetchAll(PDO::FETCH_ASSOC);
+
+                // Adicionar as imagens ao array do produto
+                $produto['imagens'] = $imagens;
+            }
 
             // Obter o total de registros para a paginação
             $countSql = 'SELECT COUNT(*) AS total FROM produto WHERE excluido = 0';
@@ -54,14 +68,14 @@ class GetProdutos
             $countStmt->execute();
             $total = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
 
+            // Retornar os produtos com suas respectivas imagens
             return $response
                 ->withHeader('Content-Type', 'application/json')
                 ->withJson([
-                    'data' => $result,
+                    'data' => $produtos,
                     'total' => $total
                 ]);
         } catch (\Exception $e) {
-            // Adicionando um código de status mais apropriado para erros
             return $response
                 ->withStatus(500)
                 ->withHeader('Content-Type', 'application/json')

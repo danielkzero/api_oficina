@@ -194,7 +194,7 @@ return function (App $app) use ($validarTokenMiddleware) {
         $app->post('', ProdutoImagem\PostProdutoImagem::class); 
         $app->put('/{id}', ProdutoImagem\PutProdutoImagem::class);
         $app->delete('/{id}', ProdutoImagem\DeleteProdutoImagem::class);
-    })->add($validarTokenMiddleware);
+    });
 
     $app->group('/tabela_preco', function ($app) use ($validarTokenMiddleware) {
         $app->get('', TabelaPreco\GetTabelaPreco::class); 
