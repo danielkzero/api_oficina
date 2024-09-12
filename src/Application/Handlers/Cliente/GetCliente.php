@@ -22,21 +22,45 @@ class GetCliente
             $queryParams = $request->getQueryParams();
             $limit = isset($queryParams['limit']) ? (int)$queryParams['limit'] : 100; // Default: 100
             $offset = isset($queryParams['offset']) ? (int)$queryParams['offset'] : 0; // Default: 0
+            $busca = isset($queryParams['busca']) ? trim($queryParams['busca']) : ''; // Parâmetro de busca
 
             // Certificar que o limit não é maior que 100
             if ($limit > 100) {
                 $limit = 100;
             }
 
-            // Buscar os dados principais dos clientes com limit e offset
-            $stmt = $this->pdo->prepare("
+            $stmt = $this->pdo->prepare("SELECT COUNT(*) as total FROM cliente");
+            $stmt->execute();
+            $totalRegistros = $stmt->fetchColumn();
+
+            // Construir a query de busca para os dados principais dos clientes
+            $sql = "
                 SELECT id, tipo, razao_social, nome_fantasia, cnpj, inscricao_estadual, rua, numero, complemento, bairro, cidade, estado, cep, suframa, observacao, ultima_alteracao, excluido, bloqueado 
                 FROM cliente
-                LIMIT :limit OFFSET :offset
-            ");
+                WHERE excluido = 0
+            ";
+
+            // Se houver um termo de busca, adicionar filtros
+            if (!empty($busca)) {
+                $sql .= " AND (razao_social LIKE :busca OR nome_fantasia LIKE :busca OR cnpj LIKE :busca OR cidade LIKE :busca)";
+            }
+
+            // Adicionar limit e offset
+            $sql .= " LIMIT :limit OFFSET :offset";
+
+            // Preparar e executar a query
+            $stmt = $this->pdo->prepare($sql);
+
+            // Se houver um termo de busca, passar o valor do parâmetro
+            if (!empty($busca)) {
+                $buscaParam = "%$busca%";
+                $stmt->bindParam(':busca', $buscaParam, PDO::PARAM_STR);
+            }
+            
             $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
             $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
+            
             $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             if (!$clientes) {
@@ -112,8 +136,13 @@ class GetCliente
                 $cliente['extras'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
 
+            $resultado = [
+                'data' => $clientes,
+                'total' => (int)$totalRegistros
+            ];
+
             // Retornar os dados dos clientes em formato JSON
-            return $response->withHeader('Content-Type', 'application/json')->withJson($clientes, 200);
+            return $response->withHeader('Content-Type', 'application/json')->withJson($resultado, 200);
 
         } catch (Exception $e) {
             return $response->withStatus(500)->withJson(['error' => $e->getMessage()]);
