@@ -192,6 +192,7 @@ return function (App $app) use ($validarTokenMiddleware) {
         $app->get('', ProdutoImagem\GetProdutoImagem::class); 
         $app->get('/{produto_id}', ProdutoImagem\GetProdutoImagemByIdProduto::class); 
         $app->post('', ProdutoImagem\PostProdutoImagem::class); 
+        $app->post('/por_codigo', ProdutoImagem\PostProdutoImagemPorCodigo::class); 
         $app->put('/{id}', ProdutoImagem\PutProdutoImagem::class);
         $app->delete('/{id}', ProdutoImagem\DeleteProdutoImagem::class);
     });
