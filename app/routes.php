@@ -22,6 +22,7 @@ use App\Application\Handlers\ProdutoImagem;
 use App\Application\Handlers\TabelaPreco;
 use App\Application\Handlers\TabelaProdutoPreco;
 use App\Application\Handlers\Usuario;
+use App\Application\Handlers\Importar;
 
 use Psr\Container\ContainerInterface;
 use Slim\Exception\HttpUnauthorizedException;
@@ -99,7 +100,7 @@ return function (App $app) use ($validarTokenMiddleware) {
         $app->post('', Cliente\PostCliente::class); 
         $app->put('/{id}', Cliente\PutCliente::class);
         $app->delete('/{id}', Cliente\DeleteCliente::class);
-    });
+    })->add($validarTokenMiddleware);
 
     $app->group('/cliente_contato', function ($app) use ($validarTokenMiddleware) {
         $app->post('', ClienteContato\PostClienteContato::class); 
@@ -135,7 +136,7 @@ return function (App $app) use ($validarTokenMiddleware) {
         $app->post('', ClienteExtra\PostClienteExtra::class); 
         $app->put('/{id}', ClienteExtra\PutClienteExtra::class);
         $app->delete('/{id}', ClienteExtra\DeleteClienteExtra::class);
-    });
+    })->add($validarTokenMiddleware);
 
     $app->group('/cliente_telefone', function ($app) use ($validarTokenMiddleware) {
         $app->post('', ClienteTelefone\PostClienteTelefone::class); 
@@ -148,7 +149,7 @@ return function (App $app) use ($validarTokenMiddleware) {
         $app->post('', CondicaoPagamento\PostCondicaoPagamento::class); 
         $app->put('/{id}', CondicaoPagamento\PutCondicaoPagamento::class);
         $app->delete('/{id}', CondicaoPagamento\DeleteCondicaoPagamento::class);
-    });
+    })->add($validarTokenMiddleware);
 
     $app->group('/forma_pagamento', function ($app) use ($validarTokenMiddleware) {
         $app->get('', FormaPagamento\GetFormaPagamento::class); 
@@ -158,6 +159,7 @@ return function (App $app) use ($validarTokenMiddleware) {
     })->add($validarTokenMiddleware);
 
     $app->group('/icms_st', function ($app) use ($validarTokenMiddleware) {
+        $app->get('', ICMS_ST\GetICMS_ST::class); 
         $app->get('/{id}', ICMS_ST\GetICMS_STById::class); 
         $app->post('', ICMS_ST\PostICMS_ST::class); 
         $app->put('/{id}', ICMS_ST\PutICMS_ST::class);
@@ -170,7 +172,11 @@ return function (App $app) use ($validarTokenMiddleware) {
         $app->post('', Pedido\PostPedido::class); 
         $app->put('/{id}', Pedido\PutPedido::class);
         $app->delete('/{id}', Pedido\DeletePedido::class);
-    });
+    })->add($validarTokenMiddleware);
+
+    $app->group('/importar', function ($app) use ($validarTokenMiddleware) {
+        $app->post('/produtos', Importar\PostImportarProduto::class);
+    })->add($validarTokenMiddleware);
 
     $app->group('/produto', function ($app) use ($validarTokenMiddleware) {
         $app->get('', Produto\GetProdutos::class); 
@@ -178,7 +184,7 @@ return function (App $app) use ($validarTokenMiddleware) {
         $app->post('', Produto\PostProduto::class); 
         $app->put('/{id}', Produto\PutProduto::class);
         $app->delete('/{id}', Produto\DeleteProduto::class);
-    });
+    })->add($validarTokenMiddleware);
 
     $app->group('/produto_categoria', function ($app) use ($validarTokenMiddleware) {
         $app->get('', ProdutoCategoria\GetProdutoCategoria::class); 
@@ -195,7 +201,7 @@ return function (App $app) use ($validarTokenMiddleware) {
         $app->post('/por_codigo', ProdutoImagem\PostProdutoImagemPorCodigo::class); 
         $app->put('/{id}', ProdutoImagem\PutProdutoImagem::class);
         $app->delete('/{id}', ProdutoImagem\DeleteProdutoImagem::class);
-    });
+    })->add($validarTokenMiddleware);
 
     $app->group('/tabela_preco', function ($app) use ($validarTokenMiddleware) {
         $app->get('', TabelaPreco\GetTabelaPreco::class); 

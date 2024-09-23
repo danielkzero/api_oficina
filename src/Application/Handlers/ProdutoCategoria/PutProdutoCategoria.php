@@ -19,12 +19,11 @@ class PutProdutoCategoria
         $id = (int)$args['id'];
         $data = $request->getParsedBody();
 
-        $stmt = $this->pdo->prepare("UPDATE produto_categoria SET nome = :nome, categoria_pai_id = :categoria_pai_id, ultima_alteracao = :ultima_alteracao, excluido = :excluido WHERE id = :id");
+        $stmt = $this->pdo->prepare("UPDATE produto_categoria SET nome = :nome, categoria_pai_id = :categoria_pai_id, ultima_alteracao = NOW(), excluido = :excluido WHERE id = :id");
 
         $stmt->execute([
             ':nome' => $data['nome'],
             ':categoria_pai_id' => $data['categoria_pai_id'] ?? null,
-            ':ultima_alteracao' => $data['ultima_alteracao'],
             ':excluido' => $data['excluido'],
             ':id' => $id
         ]);
