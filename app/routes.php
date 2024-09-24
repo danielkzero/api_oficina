@@ -221,8 +221,8 @@ return function (App $app) use ($validarTokenMiddleware) {
         $app->get('', Usuario\GetUsuario::class);
         $app->get('/{id}', Usuario\GetUsuarioId::class);
         $app->post('', Usuario\PostUsuario::class); 
-        $app->put('/{id}', Usuario\PutUsuarioId::class)->add($validarTokenMiddleware);
-        $app->delete('/{id}', Usuario\DeleteUsuarioId::class)->add($validarTokenMiddleware);
+        $app->put('/{id}', Usuario\PutUsuarioId::class);
+        $app->delete('/{id}', Usuario\DeleteUsuarioId::class);
     });
 
 

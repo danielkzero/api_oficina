@@ -22,7 +22,7 @@ return function (ContainerBuilder $containerBuilder) {
                 ],
                 "db" => [
                     'driver' => 'mysql',
-                    'host' => '127.0.0.1',
+                    'host' => 'localhost',
                     'database' => 'u616198849_oficina',
                     'username' => 'u616198849_oficina',
                     'password' => 'Oficina#123',

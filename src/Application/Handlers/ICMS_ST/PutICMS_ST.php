@@ -23,7 +23,7 @@ class PutICMS_ST
             // Update ICMS_ST
             $stmt = $this->pdo->prepare("
                 UPDATE icms_st 
-                SET codigo_ncm = :codigo_ncm, nome_excecao_fiscal = :nome_excecao_fiscal, estado_destino = :estado_destino, tipo_st = :tipo_st, valor_mva = :valor_mva, valor_pmc = :valor_pmc, icms_credito = :icms_credito, icms_destino = :icms_destino, excluido = :excluido, ultima_alteracao = NOW()
+                SET codigo_ncm = :codigo_ncm, nome_excecao_fiscal = :nome_excecao_fiscal, estado_destino = :estado_destino, tipo_st = :tipo_st, valor_mva = :valor_mva, valor_pmc = :valor_pmc, icms_credito = :icms_credito, icms_destino = :icms_destino, ultima_alteracao = NOW()
                 WHERE id = :id
             ");
             $stmt->execute([
@@ -35,11 +35,10 @@ class PutICMS_ST
                 ':valor_mva' => $data['valor_mva'],
                 ':valor_pmc' => $data['valor_pmc'],
                 ':icms_credito' => $data['icms_credito'],
-                ':icms_destino' => $data['icms_destino'],
-                ':excluido' => $data['excluido']
+                ':icms_destino' => $data['icms_destino']
             ]);
 
-            return $response->withHeader('Content-Type', 'application/json')->withJson(['status' => 'ICMS_ST atualizado com sucesso']);
+            return $response->withHeader('Content-Type', 'application/json')->withJson(['status' => 'ICMS_ST atualizado com sucesso ' . $data['nome_excecao_fiscal']]);
 
         } catch (\Exception $e) {
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json')->withJson(['status' => 'Erro ao atualizar ICMS_ST', 'error' => $e->getMessage()]);
