@@ -28,7 +28,7 @@ class GetICMS_ST
             if (!empty($busca)) {
                 $sql .= ' AND (codigo_ncm LIKE :busca OR estado_destino LIKE :busca)'; // Substitua campo1 e campo2 pelos campos apropriados
             }
-            $sql .= ' LIMIT :limit OFFSET :offset';
+            $sql .= ' ORDER BY id DESC LIMIT :limit OFFSET :offset';
 
             $stmt = $this->pdo->prepare($sql);
 

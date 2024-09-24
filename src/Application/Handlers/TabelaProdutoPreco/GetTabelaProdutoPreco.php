@@ -18,7 +18,7 @@ class GetTabelaProdutoPreco
     public function __invoke(Request $request, Response $response, $args)
     {
         try {
-            $stmt = $this->pdo->prepare("SELECT * FROM tabela_preco_produto");
+            $stmt = $this->pdo->prepare("SELECT * FROM tabela_preco_produto ORDER BY id DESC");
             $precosProdutos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             return $response->withHeader('Content-Type', 'application/json')->withJson($precosProdutos);

@@ -28,7 +28,7 @@ class GetUsuario
             if (!empty($busca)) {
                 $sql .= ' AND (nome LIKE :busca OR email LIKE :busca)';
             }
-            $sql .= ' LIMIT :limit OFFSET :offset';
+            $sql .= ' ORDER BY id DESC LIMIT :limit OFFSET :offset';
 
             $stmt = $this->pdo->prepare($sql);
 

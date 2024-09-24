@@ -20,7 +20,7 @@ class GetICMS_STById
 
         try {
             // Get ICMS_ST
-            $stmt = $this->pdo->prepare("SELECT * FROM icms_st WHERE id = :id AND excluido = 0");
+            $stmt = $this->pdo->prepare("SELECT * FROM icms_st WHERE id = :id AND excluido = 0 ORDER BY id DESC");
             $stmt->execute([':id' => $id]);
             $data = $stmt->fetch(PDO::FETCH_ASSOC);
 

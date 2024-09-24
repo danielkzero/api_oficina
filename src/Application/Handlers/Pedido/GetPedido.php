@@ -40,7 +40,7 @@ class GetPedido
             if (!empty($busca)) {
                 $sql .= ' AND (c.razao_social LIKE :busca OR c.nome_fantasia LIKE :busca)';
             }
-            $sql .= ' LIMIT :limit OFFSET :offset';
+            $sql .= ' ORDER BY id DESC LIMIT :limit OFFSET :offset';
 
             $stmt = $this->pdo->prepare($sql);
 

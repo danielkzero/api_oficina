@@ -18,7 +18,7 @@ class GetProdutoCategoriaById
     {
         $id = (int)$args['id'];
 
-        $stmt = $this->pdo->prepare("SELECT * FROM produto_categoria WHERE id = :id AND excluido = 0");
+        $stmt = $this->pdo->prepare("SELECT * FROM produto_categoria WHERE id = :id AND excluido = 0 ORDER BY id DESC");
         $stmt->execute([':id' => $id]);
         $categoria = $stmt->fetch(PDO::FETCH_ASSOC);
 

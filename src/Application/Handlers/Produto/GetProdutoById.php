@@ -18,7 +18,7 @@ class GetProdutoById
     {
         $id = (int)$args['id'];
 
-        $stmt = $this->pdo->prepare("SELECT * FROM produto WHERE id = :id");
+        $stmt = $this->pdo->prepare("SELECT * FROM produto WHERE id = :id ORDER BY id DESC");
         $stmt->execute([':id' => $id]);
         $produto = $stmt->fetch(PDO::FETCH_ASSOC);
 

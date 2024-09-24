@@ -28,7 +28,7 @@ class GetProdutos
             if (!empty($busca)) {
                 $sql .= ' AND (nome LIKE :busca OR codigo LIKE :busca)';
             }
-            $sql .= ' LIMIT :limit OFFSET :offset';
+            $sql .= ' ORDER BY id DESC LIMIT :limit OFFSET :offset';
 
             $stmt = $this->pdo->prepare($sql);
 

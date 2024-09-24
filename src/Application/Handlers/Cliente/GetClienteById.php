@@ -24,7 +24,7 @@ class GetClienteById
             $stmt = $this->pdo->prepare("
                 SELECT id, tipo, razao_social, nome_fantasia, cnpj, inscricao_estadual, rua, numero, complemento, bairro, cidade, estado, cep, suframa, observacao, ultima_alteracao, excluido, bloqueado, motivo_bloqueio_id
                 FROM cliente
-                WHERE id = :id
+                WHERE id = :id ORDER BY id DESC
             ");
             $stmt->execute([':id' => $cliente_id]);
             $cliente = $stmt->fetch(PDO::FETCH_ASSOC);

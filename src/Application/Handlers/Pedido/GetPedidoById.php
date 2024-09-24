@@ -27,7 +27,7 @@ class GetPedidoById
             LEFT JOIN pedido_endereco_entrega e ON p.id = e.pedido_id
             LEFT JOIN pedido_item i ON p.id = i.pedido_id
             LEFT JOIN pedido_item_desconto d ON i.id = d.pedido_item_id
-            WHERE p.id = :id AND p.excluido = 0
+            WHERE p.id = :id AND p.excluido = 0 ORDER BY id DESC
         ");
         $stmt->bindParam(':id', $id);
         $stmt->execute();

@@ -46,7 +46,7 @@ class GetCliente
             }
 
             // Adicionar limit e offset
-            $sql .= " LIMIT :limit OFFSET :offset";
+            $sql .= " ORDER BY id DESC LIMIT :limit OFFSET :offset";
 
             // Preparar e executar a query
             $stmt = $this->pdo->prepare($sql);

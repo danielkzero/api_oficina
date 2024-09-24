@@ -18,7 +18,7 @@ class GetCondicaoPagamento
     public function __invoke(Request $request, Response $response, $args)
     {
         try {
-            $stmt = $this->pdo->query("SELECT * FROM condicao_pagamento");
+            $stmt = $this->pdo->query("SELECT * FROM condicao_pagamento ORDER BY id DESC");
             $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
             return $response->withHeader('Content-Type', 'application/json')->withJson($data);
         } catch (Exception $e) {
