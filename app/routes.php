@@ -225,6 +225,10 @@ return function (App $app) use ($validarTokenMiddleware) {
         $app->delete('/{id}', Usuario\DeleteUsuarioId::class);
     });
 
+    $app->group('/profile', function ($app) use ($validarTokenMiddleware) {
+        $app->get('', Usuario\GetUsuarioByEmail::class);
+    });
+
 
     $app->get('/statustoken', function (Request $request, Response $response) {
         try {

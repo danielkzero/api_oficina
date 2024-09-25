@@ -17,7 +17,7 @@ function generate_jwt_token($user_id, $secret_key) {
 
 function authenticateUser(PDO $pdo, string $usuario, string $senha, string $secret_key): ?string
 {
-    $stmt = $pdo->prepare("SELECT * FROM usuario WHERE usuario = :usuario AND senha = :senha");
+    $stmt = $pdo->prepare("SELECT * FROM usuario WHERE email = :usuario AND senha = :senha");
     $stmt->bindParam(':usuario', $usuario);
     $stmt->bindParam(':senha', $senha);
     $stmt->execute();
@@ -25,7 +25,7 @@ function authenticateUser(PDO $pdo, string $usuario, string $senha, string $secr
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($user) {
-        return generate_jwt_token(['usuario' => $user['usuario']], $secret_key);
+        return generate_jwt_token(['usuario' => $user['email']], $secret_key);
     }
 
     return null;

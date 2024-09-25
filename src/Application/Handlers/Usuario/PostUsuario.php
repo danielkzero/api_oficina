@@ -20,16 +20,49 @@ class PostUsuario
     {
         try {
             $body = $request->getParsedBody();
+            // Captura os novos dados
             $nome = $body['nome'];
             $email = $body['email'];
             $usuario = $body['usuario'];
-            $senha = md5($body['senha']);
+            $avatar = isset($body['avatar']) ? $body['avatar'] : null; // Verifica se o avatar está presente
+            $telefone = isset($body['telefone']) ? $body['telefone'] : null; // Captura o telefone
+            $tipo_permissao = $body['tipo_permissao']; // Captura o tipo de permissão
+            $permissao = json_encode($body['permissao']); // Converte as permissões para JSON
+            $assinatura_email = isset($body['assinatura_email']) ? $body['assinatura_email'] : null; // Captura a assinatura de email
             
-            $stmt = $this->pdo->prepare('INSERT INTO usuario (nome, email, usuario, senha) VALUES (:nome, :email, :usuario, :senha)');
+
+            $stmt = $this->pdo->prepare('INSERT INTO usuario 
+            (nome
+            ,email 
+            ,usuario' . 
+            ($avatar ? ',avatar' : '') . // Adiciona a coluna de avatar somente se fornecida
+            ($telefone ? ',telefone' : '') . // Adiciona a coluna de telefone somente se fornecida
+            ($assinatura_email ? ',assinatura_email' : '') . // Adiciona a coluna de assinatura_email somente se fornecida
+            ',tipo_permissao
+            ,permissao) VALUES 
+            (:nome
+            ,:email 
+            ,:usuario' . 
+            ($avatar ? ',:avatar' : '') . // Adiciona a coluna de avatar somente se fornecida
+            ($telefone ? ',:telefone' : '') . // Adiciona a coluna de telefone somente se fornecida
+            ($assinatura_email ? ',:assinatura_email' : '') . // Adiciona a coluna de assinatura_email somente se fornecida
+            ',:tipo_permissao
+            ,:permissao)');
+
             $stmt->bindParam(':nome', $nome);
             $stmt->bindParam(':email', $email);
             $stmt->bindParam(':usuario', $usuario);
-            $stmt->bindParam(':senha', $senha);
+            if ($avatar) {
+                $stmt->bindParam(':avatar', $avatar);
+            }
+            if ($telefone) {
+                $stmt->bindParam(':telefone', $telefone);
+            }
+            if ($assinatura_email) {
+                $stmt->bindParam(':assinatura_email', $assinatura_email);
+            }
+            $stmt->bindParam(':tipo_permissao', $tipo_permissao); // Adiciona tipo_permissao
+            $stmt->bindParam(':permissao', $permissao);
             $stmt->execute();
 
             return $response->withHeader('Content-Type', 'application/json')->withJson(['success' => true]);
