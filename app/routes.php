@@ -23,6 +23,7 @@ use App\Application\Handlers\TabelaPreco;
 use App\Application\Handlers\TabelaProdutoPreco;
 use App\Application\Handlers\Usuario;
 use App\Application\Handlers\Importar;
+use App\Application\Handlers\PedidoStatus;
 
 use Psr\Container\ContainerInterface;
 use Slim\Exception\HttpUnauthorizedException;
@@ -172,6 +173,13 @@ return function (App $app) use ($validarTokenMiddleware) {
         $app->post('', Pedido\PostPedido::class); 
         $app->put('/{id}', Pedido\PutPedido::class);
         $app->delete('/{id}', Pedido\DeletePedido::class);
+    })->add($validarTokenMiddleware);
+
+    $app->group('/pedido_status', function ($app) use ($validarTokenMiddleware) {
+        $app->get('', PedidoStatus\GetPedidoStatus::class); 
+        $app->post('', PedidoStatus\PostPedidoStatus::class); 
+        $app->put('/{id}', PedidoStatus\PutPedidoStatus::class);
+        $app->delete('/{id}', PedidoStatus\DeletePedidoStatus::class);
     })->add($validarTokenMiddleware);
 
     $app->group('/importar', function ($app) use ($validarTokenMiddleware) {
