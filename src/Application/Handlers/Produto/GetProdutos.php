@@ -24,11 +24,16 @@ class GetProdutos
             $offset = isset($queryParams['offset']) ? (int) $queryParams['offset'] : 0;
 
             // Construir a consulta SQL para os produtos
-            $sql = 'SELECT * FROM produto WHERE excluido = 0';
+            $sql = 'SELECT p.*, tp.nome as tabela_nome, tp.acrescimo, tp.desconto, tpp.preco 
+                    FROM produto p
+                    LEFT JOIN tabela_preco_produto tpp ON p.id = tpp.produto_id
+                    LEFT JOIN tabela_preco tp ON tpp.tabela_id = tp.id
+                    WHERE p.excluido = 0';
+
             if (!empty($busca)) {
-                $sql .= ' AND (nome LIKE :busca OR codigo LIKE :busca)';
+                $sql .= ' AND (p.nome LIKE :busca OR p.codigo LIKE :busca)';
             }
-            $sql .= ' ORDER BY id DESC LIMIT :limit OFFSET :offset';
+            $sql .= ' ORDER BY p.id DESC LIMIT :limit OFFSET :offset';
 
             $stmt = $this->pdo->prepare($sql);
 
@@ -68,7 +73,7 @@ class GetProdutos
             $countStmt->execute();
             $total = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
 
-            // Retornar os produtos com suas respectivas imagens
+            // Retornar os produtos com suas respectivas imagens e tabelas de preços
             return $response
                 ->withHeader('Content-Type', 'application/json')
                 ->withJson([
