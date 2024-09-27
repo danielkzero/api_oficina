@@ -22,7 +22,7 @@ return function (ContainerBuilder $containerBuilder) {
                 ],
                 "db" => [
                     'driver' => 'mysql',
-                    'host' => 'srv540.hstgr.io',
+                    'host' => 'localhost',
                     'database' => 'u616198849_oficina',
                     'username' => 'u616198849_oficina',
                     'password' => 'Oficina#123',
