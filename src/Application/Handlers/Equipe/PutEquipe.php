@@ -5,7 +5,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use PDO;
 
-class UpdateEquipe
+class PutEquipe
 {
     private $pdo;
 
@@ -18,7 +18,7 @@ class UpdateEquipe
     {
         $id = (int)$args['id'];
         $data = $request->getParsedBody();
-
+        
         // Verifica se a equipe existe
         $stmt = $this->pdo->prepare("SELECT id FROM usuario_equipe WHERE id = :id AND excluido = 0");
         $stmt->bindParam(':id', $id);
@@ -32,13 +32,14 @@ class UpdateEquipe
         // Atualiza os dados da equipe
         $stmtUpdateEquipe = $this->pdo->prepare("
             UPDATE usuario_equipe 
-            SET nome = :nome, atualizado_em = current_timestamp() 
+            SET nome = :nome, ultima_alteracao = current_timestamp() 
             WHERE id = :id
         ");
         $stmtUpdateEquipe->bindParam(':nome', $data['nome']);
         $stmtUpdateEquipe->bindParam(':id', $id);
         $stmtUpdateEquipe->execute();
 
+        
         // Atualiza os usuários associados à equipe
         if (isset($data['usuarios']) && is_array($data['usuarios'])) {
             foreach ($data['usuarios'] as $usuario) {
@@ -53,9 +54,10 @@ class UpdateEquipe
                     $stmtCheckUsuario->bindParam(':id_equipe', $id);
                     $stmtCheckUsuario->execute();
                     $usuarioEquipe = $stmtCheckUsuario->fetch(PDO::FETCH_ASSOC);
-
+                    
                     if ($usuarioEquipe) {
                         // Atualiza o usuário existente na equipe
+                        
                         $stmtUpdateUsuario = $this->pdo->prepare("
                             UPDATE usuario_equipe_usuario 
                             SET responsavel = :responsavel, atualizado_em = current_timestamp() 
@@ -64,10 +66,11 @@ class UpdateEquipe
                         $stmtUpdateUsuario->bindParam(':responsavel', $usuario['responsavel']);
                         $stmtUpdateUsuario->bindParam(':id', $usuarioEquipe['id']);
                         $stmtUpdateUsuario->execute();
+                        
                     } else {
                         // Adiciona um novo usuário à equipe
                         $stmtInsertUsuario = $this->pdo->prepare("
-                            INSERT INTO usuario_equipe_usuario (id_equipe, id_usuario, responsavel, cadastrado_em, atualizado_em, excluido)
+                            INSERT INTO usuario_equipe_usuario (id_equipe, id_usuario, responsavel, cadastrado_em, ultima_alteracao, excluido)
                             VALUES (:id_equipe, :id_usuario, :responsavel, current_timestamp(), current_timestamp(), 0)
                         ");
                         $stmtInsertUsuario->bindParam(':id_equipe', $id);

@@ -237,8 +237,10 @@ return function (App $app) use ($validarTokenMiddleware) {
     $app->group('/equipe', function ($app) {
         $app->get('', Equipe\GetEquipe::class);
         $app->post('', Equipe\PostEquipe::class);
-        $app->put('/{id}', Equipe\UpdateEquipe::class);
+        $app->put('/{id}', Equipe\PutEquipe::class);
         $app->delete('/{id}', Equipe\DeleteEquipe::class);
+        $app->put('/{id}/remover_usuario', Equipe\DeleteEquipeMembro::class);
+        $app->put('/{id}/responsavel', Equipe\PutEquipeResponsavel::class);
     });
 
     $app->group('/profile', function ($app) {

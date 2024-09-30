@@ -25,7 +25,7 @@ class GetPedido
 
             // Construir a consulta SQL com base nos parâmetros
             $sql = "
-                SELECT p.*, c.razao_social, c.nome_fantasia, 
+                SELECT p.*, sts.descricao as sts_descricao, hex_rgb, auto_checked, us.nome as criador_nome, us.avatar as criador_avatar, c.razao_social, c.nome_fantasia, 
                        e.endereco, e.numero, e.complemento, e.bairro, e.cidade, e.estado, e.cep, 
                        i.id AS item_id, i.quantidade, i.preco_tabela, i.ipi, i.observacoes, i.st, i.produto_id, i.excluido AS item_excluido, i.subtotal, i.preco_liquido, 
                        d.desconto AS item_desconto 
@@ -34,6 +34,8 @@ class GetPedido
                 LEFT JOIN pedido_endereco_entrega e ON p.id = e.pedido_id
                 LEFT JOIN pedido_item i ON p.id = i.pedido_id
                 LEFT JOIN pedido_item_desconto d ON i.id = d.pedido_item_id
+                LEFT JOIN usuario us ON us.id = p.criador_id 
+                LEFT JOIN pedido_status sts ON sts.status = p.status
                 WHERE p.excluido = 0
             ";
 
@@ -64,6 +66,8 @@ class GetPedido
                         'razao_social' => $pedido['razao_social'],
                         'nome_fantasia' => $pedido['nome_fantasia'],
                         'status' => $pedido['status'],
+                        'sts_descricao' => $pedido['sts_descricao'],
+                        'hex_rgb' => $pedido['hex_rgb'],
                         'condicao_pagamento' => $pedido['condicao_pagamento'],
                         'forma_pagamento_id' => $pedido['forma_pagamento_id'],
                         'tipo_pedido_id' => $pedido['tipo_pedido_id'],
@@ -71,12 +75,14 @@ class GetPedido
                         'status_faturamento' => $pedido['status_faturamento'],
                         'observacoes' => $pedido['observacoes'],
                         'numero' => $pedido['numero'],
-                        'data_criacao' => $pedido['data_criacao'],
+                        'cadastrado_em' => $pedido['cadastrado_em'],
                         'ultima_alteracao' => $pedido['ultima_alteracao'],
                         'condicao_pagamento_id' => $pedido['condicao_pagamento_id'],
                         'data_emissao' => $pedido['data_emissao'],
                         'total' => $pedido['total'],
                         'criador_id' => $pedido['criador_id'],
+                        'criador_nome' => $pedido['criador_nome'],
+                        'criador_avatar' => $pedido['criador_avatar'],
                         'enderecos' => [],
                         'itens' => []
                     ];

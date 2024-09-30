@@ -21,7 +21,7 @@ class GetEquipe
             SELECT e.*, 
                    ue.id_usuario, ue.responsavel, u.nome AS usuario_nome
             FROM usuario_equipe e
-            LEFT JOIN usuario_equipe_usuario ue ON e.id = ue.id_equipe
+            LEFT JOIN usuario_equipe_usuario ue ON e.id = ue.id_equipe AND ue.excluido = 0
             LEFT JOIN usuario u ON ue.id_usuario = u.id
             WHERE e.excluido = 0 ORDER BY e.id DESC
         ");
@@ -29,9 +29,9 @@ class GetEquipe
         $equipesData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         if (!$equipesData) {
-            return $response->withStatus(404)
+            return $response->withStatus(200)
                             ->withHeader('Content-Type', 'application/json')
-                            ->withJson(['status' => 'Nenhuma equipe encontrada']);
+                            ->withJson([]);
         }
 
         // Mapeando equipes e seus usuários
@@ -43,7 +43,7 @@ class GetEquipe
                     'id' => $row['id'],
                     'nome' => $row['nome'],
                     'cadastrado_em' => $row['cadastrado_em'],
-                    'atualizado_em' => $row['atualizado_em'],
+                    'ultima_alteracao' => $row['ultima_alteracao'],
                     'usuarios' => []
                 ];
             }
