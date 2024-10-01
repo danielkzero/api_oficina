@@ -22,13 +22,18 @@ class GetPedido
             $busca = isset($queryParams['busca']) ? $queryParams['busca'] : '';
             $limit = isset($queryParams['limit']) ? (int) $queryParams['limit'] : 10;
             $offset = isset($queryParams['offset']) ? (int) $queryParams['offset'] : 0;
+            $status = isset($queryParams['status']) ? $queryParams['status'] : null;
+            $criador_id = isset($queryParams['criador_id']) ? (int) $queryParams['criador_id'] : null;
+            $dataInicial = isset($queryParams['data_inicial']) ? $queryParams['data_inicial'] : null;
+            $dataFinal = isset($queryParams['data_final']) ? $queryParams['data_final'] : null;
 
             // Construir a consulta SQL com base nos parâmetros
             $sql = "
-                SELECT p.*, sts.descricao as sts_descricao, hex_rgb, auto_checked, us.nome as criador_nome, us.avatar as criador_avatar, c.razao_social, c.nome_fantasia, 
+                SELECT p.*, sts.descricao as sts_descricao, hex_rgb, auto_checked, us.nome as criador_nome, us.avatar as criador_avatar, 
+                       c.razao_social, c.nome_fantasia, 
                        e.endereco, e.numero, e.complemento, e.bairro, e.cidade, e.estado, e.cep, 
-                       i.id AS item_id, i.quantidade, i.preco_tabela, i.ipi, i.observacoes, i.st, i.produto_id, i.excluido AS item_excluido, i.subtotal, i.preco_liquido, 
-                       d.desconto AS item_desconto 
+                       i.id AS item_id, i.quantidade, i.preco_tabela, i.ipi, i.observacoes, i.st, i.produto_id, i.excluido AS item_excluido, 
+                       i.subtotal, i.preco_liquido, d.desconto AS item_desconto 
                 FROM pedido p
                 LEFT JOIN cliente c ON c.id = p.cliente_id 
                 LEFT JOIN pedido_endereco_entrega e ON p.id = e.pedido_id
@@ -39,10 +44,24 @@ class GetPedido
                 WHERE p.excluido = 0
             ";
 
+            // Condições opcionais
             if (!empty($busca)) {
                 $sql .= ' AND (c.razao_social LIKE :busca OR c.nome_fantasia LIKE :busca)';
             }
-            $sql .= ' ORDER BY id DESC LIMIT :limit OFFSET :offset';
+
+            if ($status !== null) {
+                $sql .= ' AND p.status = :status';
+            }
+
+            if ($criador_id !== null) {
+                $sql .= ' AND p.criador_id = :criador_id';
+            }
+
+            if (!empty($dataInicial) && !empty($dataFinal)) {
+                $sql .= ' AND p.data_emissao BETWEEN :dataInicial AND :dataFinal';
+            }
+
+            $sql .= ' ORDER BY p.id DESC LIMIT :limit OFFSET :offset';
 
             $stmt = $this->pdo->prepare($sql);
 
@@ -50,9 +69,20 @@ class GetPedido
             if (!empty($busca)) {
                 $stmt->bindValue(':busca', '%' . $busca . '%', PDO::PARAM_STR);
             }
+            if ($status !== null) {
+                $stmt->bindValue(':status', $status, PDO::PARAM_INT);
+            }
+            if ($criador_id !== null) {
+                $stmt->bindValue(':criador_id', $criador_id, PDO::PARAM_INT);
+            }
+            if (!empty($dataInicial) && !empty($dataFinal)) {
+                $stmt->bindValue(':dataInicial', $dataInicial, PDO::PARAM_STR);
+                $stmt->bindValue(':dataFinal', $dataFinal, PDO::PARAM_STR);
+            }
             $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
             $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
 
+            // Executar a consulta
             $stmt->execute();
             $pedidos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -149,7 +179,8 @@ class GetPedido
                 ->withJson([
                     'error' => [
                         'type' => 'SERVER_ERROR',
-                        'description' => $e->getMessage()
+                        'message' => 'An error occurred while processing your request.',
+                        'details' => $e->getMessage(),
                     ]
                 ]);
         }
