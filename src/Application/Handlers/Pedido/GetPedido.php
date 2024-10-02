@@ -29,20 +29,20 @@ class GetPedido
 
             // Construir a consulta SQL com base nos parâmetros
             $sql = "
-                SELECT p.*, sts.descricao as sts_descricao, hex_rgb, auto_checked, us.nome as criador_nome, us.avatar as criador_avatar, 
-                       c.razao_social, c.nome_fantasia, 
-                       e.endereco, e.numero, e.complemento, e.bairro, e.cidade, e.estado, e.cep, 
-                       i.id AS item_id, i.quantidade, i.preco_tabela, i.ipi, i.observacoes, i.st, i.produto_id, i.excluido AS item_excluido, 
-                       i.subtotal, i.preco_liquido, d.desconto AS item_desconto 
+                SELECT
+                    p.*, sts.descricao as sts_descricao, hex_rgb, auto_checked, us.nome as criador_nome, us.avatar as criador_avatar,
+                    c.razao_social, c.nome_fantasia,
+                    e.endereco, e.numero, e.complemento, e.bairro, e.cidade, e.estado, e.cep,
+                    i.id AS item_id, i.quantidade, i.preco_tabela, i.ipi, i.observacoes, i.st, i.produto_id, i.excluido AS item_excluido,
+                    i.subtotal, i.preco_liquido, d.desconto AS item_desconto
                 FROM pedido p
-                LEFT JOIN cliente c ON c.id = p.cliente_id 
+                LEFT JOIN cliente c ON c.id = p.cliente_id
                 LEFT JOIN pedido_endereco_entrega e ON p.id = e.pedido_id
                 LEFT JOIN pedido_item i ON p.id = i.pedido_id
                 LEFT JOIN pedido_item_desconto d ON i.id = d.pedido_item_id
-                LEFT JOIN usuario us ON us.id = p.criador_id 
+                LEFT JOIN usuario us ON us.id = p.criador_id
                 LEFT JOIN pedido_status sts ON sts.status = p.status
-                WHERE p.excluido = 0
-            ";
+                WHERE p.excluido = 0";
 
             // Condições opcionais
             if (!empty($busca)) {
@@ -50,7 +50,7 @@ class GetPedido
             }
 
             if ($status !== null) {
-                $sql .= ' AND p.status = :status';
+                $sql .= ' AND p.status =  :status ';
             }
 
             if ($criador_id !== null) {
@@ -65,12 +65,14 @@ class GetPedido
 
             $stmt = $this->pdo->prepare($sql);
 
+            
+
             // Vincular os parâmetros
             if (!empty($busca)) {
                 $stmt->bindValue(':busca', '%' . $busca . '%', PDO::PARAM_STR);
             }
             if ($status !== null) {
-                $stmt->bindValue(':status', $status, PDO::PARAM_INT);
+                $stmt->bindValue(':status', $status, PDO::PARAM_STR);
             }
             if ($criador_id !== null) {
                 $stmt->bindValue(':criador_id', $criador_id, PDO::PARAM_INT);
@@ -151,17 +153,40 @@ class GetPedido
             $countSql = "
                 SELECT COUNT(DISTINCT p.id) AS total
                 FROM pedido p
-                LEFT JOIN cliente c ON c.id = p.cliente_id 
-                WHERE p.excluido = 0
-            ";
+                LEFT JOIN cliente c ON c.id = p.cliente_id
+                WHERE p.excluido = 0";
 
+            // Condições opcionais
             if (!empty($busca)) {
                 $countSql .= ' AND (c.razao_social LIKE :busca OR c.nome_fantasia LIKE :busca)';
             }
 
+            if ($status !== null) {
+                $countSql .= ' AND p.status = :status';
+            }
+
+            if ($criador_id !== null) {
+                $countSql .= ' AND p.criador_id = :criador_id';
+            }
+
+            if (!empty($dataInicial) && !empty($dataFinal)) {
+                $countSql .= ' AND p.data_emissao BETWEEN :dataInicial AND :dataFinal';
+            }
+
+
             $countStmt = $this->pdo->prepare($countSql);
             if (!empty($busca)) {
                 $countStmt->bindValue(':busca', '%' . $busca . '%', PDO::PARAM_STR);
+            }
+            if ($status !== null) {
+                $countStmt->bindValue(':status', $status, PDO::PARAM_STR);
+            }
+            if ($criador_id !== null) {
+                $countStmt->bindValue(':criador_id', $criador_id, PDO::PARAM_INT);
+            }
+            if (!empty($dataInicial) && !empty($dataFinal)) {
+                $countStmt->bindValue(':dataInicial', $dataInicial, PDO::PARAM_STR);
+                $countStmt->bindValue(':dataFinal', $dataFinal, PDO::PARAM_STR);
             }
             $countStmt->execute();
             $total = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
