@@ -21,6 +21,7 @@ use App\Application\Handlers\ProdutoCategoria;
 use App\Application\Handlers\ProdutoImagem;
 use App\Application\Handlers\TabelaPreco;
 use App\Application\Handlers\TabelaProdutoPreco;
+use App\Application\Handlers\TabelaPrecoCidade;
 use App\Application\Handlers\Usuario;
 use App\Application\Handlers\Importar;
 use App\Application\Handlers\PedidoStatus;
@@ -217,13 +218,20 @@ return function (App $app) use ($validarTokenMiddleware) {
         $app->post('', TabelaPreco\PostTabelaPreco::class);
         $app->put('/{id}', TabelaPreco\PutTabelaPreco::class);
         $app->delete('/{id}', TabelaPreco\DeleteTabelaPreco::class);
-    })->add($validarTokenMiddleware);
+    });
 
     $app->group('/tabela_produto_preco', function ($app) {
         $app->get('', TabelaProdutoPreco\GetTabelaProdutoPreco::class);
         $app->post('', TabelaProdutoPreco\PostTabelaProdutoPreco::class);
         $app->put('/{id}', TabelaProdutoPreco\PutTabelaProdutoPreco::class);
         $app->delete('/{id}', TabelaProdutoPreco\DeleteTabelaProdutoPreco::class);
+    })->add($validarTokenMiddleware);
+
+    $app->group('/tabela_preco_cidade', function ($app) {
+        $app->get('', TabelaPrecoCidade\GetTabelaPrecoCidade::class);
+        $app->post('', TabelaPrecoCidade\PostTabelaPrecoCidade::class);
+        $app->put('/{id}', TabelaPrecoCidade\PutTabelaPrecoCidade::class);
+        $app->delete('/{id}', TabelaPrecoCidade\DeleteTabelaPrecoCidade::class);
     })->add($validarTokenMiddleware);
 
     $app->group('/usuario', function ($app) use ($validarTokenMiddleware){
