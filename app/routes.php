@@ -26,6 +26,8 @@ use App\Application\Handlers\Usuario;
 use App\Application\Handlers\Importar;
 use App\Application\Handlers\PedidoStatus;
 use App\Application\Handlers\Equipe;
+use App\Application\Handlers\Empresa;
+use App\Application\Handlers\ConfiguracaoSistema;
 
 use Psr\Container\ContainerInterface;
 use Slim\Exception\HttpUnauthorizedException;
@@ -103,6 +105,22 @@ return function (App $app) use ($validarTokenMiddleware) {
         $app->post('', Cliente\PostCliente::class);
         $app->put('/{id}', Cliente\PutCliente::class);
         $app->delete('/{id}', Cliente\DeleteCliente::class);
+    })->add($validarTokenMiddleware);
+
+    $app->group('/empresa', function ($app) {
+        $app->get('/{id}', Empresa\GetEmpresaById::class);
+        $app->get('', Empresa\GetEmpresa::class);
+        $app->post('', Empresa\PostEmpresa::class);
+        $app->put('/{id}', Empresa\PutEmpresa::class);
+        $app->delete('/{id}', Empresa\DeleteEmpresa::class);
+    })->add($validarTokenMiddleware);
+
+    $app->group('/configuracao_sistema', function ($app) {
+        $app->get('', ConfiguracaoSistema\GetConfiguracaoSistema::class);
+        $app->get('/{id}', ConfiguracaoSistema\GetConfiguracaoSistemaById::class);
+        $app->post('', ConfiguracaoSistema\PostConfiguracaoSistema::class);
+        $app->put('/{id}', ConfiguracaoSistema\PutConfiguracaoSistema::class);
+        $app->delete('/{id}', ConfiguracaoSistema\DeleteConfiguracaoSistema::class);
     })->add($validarTokenMiddleware);
 
     $app->group('/cliente_contato', function ($app) {

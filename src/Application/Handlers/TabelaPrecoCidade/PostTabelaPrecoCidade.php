@@ -18,21 +18,42 @@ class PostTabelaPrecoCidade
     public function __invoke(Request $request, Response $response, $args)
     {
         try {
+            // Obtém os dados da requisição
             $data = $request->getParsedBody();
-            $id_tabela_preco = $data['id_tabela_preco'];
-            $id_ibge_cidade = $data['id_ibge_cidade'];
+            $tabela = $data['tabela'];
+            $regioes = $data['regioes']; // array de regiões
 
-            $stmt = $this->pdo->prepare("INSERT INTO tabela_preco_cidade (id_tabela_preco, id_ibge_cidade) VALUES (:id_tabela_preco, :id_ibge_cidade)");
-            $stmt->bindParam(':id_tabela_preco', $id_tabela_preco);
-            $stmt->bindParam(':id_ibge_cidade', $id_ibge_cidade);
-
-            if ($stmt->execute()) {
-                return $response->withHeader('Content-Type', 'application/json')->withJson(['status' => 'success'], 201);
-            } else {
-                return $response->withHeader('Content-Type', 'application/json')->withJson(['status' => 'error'], 500);
+            // Verifica se as regiões estão presentes
+            if (empty($regioes) || empty($tabela)) {
+                return $response->withHeader('Content-Type', 'application/json')
+                                ->withStatus(400)
+                                ->getBody()->write(json_encode(['status' => 'error', 'message' => 'Tabela e Regiões são obrigatórias.']));
             }
+
+            // Prepara a query SQL para inserção com ON DUPLICATE KEY
+            $stmt = $this->pdo->prepare("
+                INSERT INTO tabela_preco_cidade (id_tabela_preco, id_ibge_cidade) 
+                VALUES (:id_tabela_preco, :id_ibge_cidade)
+                ON DUPLICATE KEY UPDATE 
+                    id_tabela_preco = VALUES(id_tabela_preco), 
+                    id_ibge_cidade = VALUES(id_ibge_cidade)
+            ");
+
+            // Itera sobre cada região e executa a inserção
+            foreach ($regioes as $regiao) {
+                $stmt->bindParam(':id_tabela_preco', $tabela);
+                $stmt->bindParam(':id_ibge_cidade', $regiao['id']); // Assumindo que cada região tem um campo 'id'
+                $stmt->execute();
+            }
+
+            // Retorna sucesso
+            $response->getBody()->write(json_encode(['status' => 'success']));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+
         } catch (Exception $e) {
-            return $response->withStatus(500)->withJson(['error' => $e->getMessage()]);
+            // Retorna erro em caso de exceção
+            $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }
 }
