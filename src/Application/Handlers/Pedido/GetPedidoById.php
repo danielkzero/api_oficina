@@ -49,7 +49,7 @@ class GetPedidoById
             'status_faturamento' => $pedido['status_faturamento'],
             'observacoes' => $pedido['observacoes'],
             'numero' => $pedido['numero'],
-            'data_criacao' => $pedido['data_criacao'],
+            'cadastrado_em' => $pedido['cadastrado_em'],
             'ultima_alteracao' => $pedido['ultima_alteracao'],
             'condicao_pagamento_id' => $pedido['condicao_pagamento_id'],
             'data_emissao' => $pedido['data_emissao'],

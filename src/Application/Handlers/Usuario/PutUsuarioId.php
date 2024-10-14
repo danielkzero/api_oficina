@@ -26,7 +26,6 @@ class PutUsuarioId
             $nome = $body['nome'];
             $email = $body['email'];
             $usuario = $body['usuario'];
-            $senha = isset($body['senha']) ? md5($body['senha']) : null; // Atualiza a senha apenas se fornecida
             $avatar = isset($body['avatar']) ? $body['avatar'] : null; // Verifica se o avatar está presente
             $telefone = isset($body['telefone']) ? $body['telefone'] : null; // Captura o telefone
             $tipo_permissao = $body['tipo_permissao']; // Captura o tipo de permissão
@@ -38,7 +37,6 @@ class PutUsuarioId
                 nome=:nome, 
                 email=:email, 
                 usuario=:usuario' . 
-                ($senha ? ', senha=:senha' : '') . // Adiciona a coluna de senha somente se fornecida
                 ($avatar ? ', avatar=:avatar' : '') . // Adiciona a coluna de avatar somente se fornecida
                 ($telefone ? ', telefone=:telefone' : '') . // Adiciona a coluna de telefone somente se fornecida
                 ($assinatura_email ? ', assinatura_email=:assinatura_email' : '') . // Adiciona a coluna de assinatura_email somente se fornecida
@@ -50,9 +48,6 @@ class PutUsuarioId
             $stmt->bindParam(':nome', $nome);
             $stmt->bindParam(':email', $email);
             $stmt->bindParam(':usuario', $usuario);
-            if ($senha) {
-                $stmt->bindParam(':senha', $senha);
-            }
             if ($avatar) {
                 $stmt->bindParam(':avatar', $avatar);
             }
