@@ -35,7 +35,7 @@ class GetCliente
 
             // Construir a query de busca para os dados principais dos clientes
             $sql = "
-                SELECT id, tipo, razao_social, nome_fantasia, cnpj, inscricao_estadual, rua, numero, complemento, bairro, cidade, estado, cep, suframa, observacao, ultima_alteracao, excluido, bloqueado 
+                SELECT id, tipo, ibge, razao_social, nome_fantasia, cnpj, inscricao_estadual, rua, numero, complemento, bairro, cidade, estado, cep, suframa, observacao, ultima_alteracao, excluido, bloqueado 
                 FROM cliente
                 WHERE excluido = 0
             ";

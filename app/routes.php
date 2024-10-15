@@ -209,6 +209,7 @@ return function (App $app) use ($validarTokenMiddleware) {
     $app->group('/produto', function ($app) {
         $app->get('', Produto\GetProdutos::class);
         $app->get('/{id}', Produto\GetProdutoById::class);
+        $app->get('/tabela/{id}', Produto\GetProdutoIdTabela::class);
         $app->post('', Produto\PostProduto::class);
         $app->put('/{id}', Produto\PutProduto::class);
         $app->delete('/{id}', Produto\DeleteProduto::class);
@@ -233,6 +234,7 @@ return function (App $app) use ($validarTokenMiddleware) {
 
     $app->group('/tabela_preco', function ($app)  {
         $app->get('', TabelaPreco\GetTabelaPreco::class);
+        $app->get('/ibge/{id}', TabelaPreco\GetTabelaPrecoIdIbge::class);
         $app->post('', TabelaPreco\PostTabelaPreco::class);
         $app->put('/{id}', TabelaPreco\PutTabelaPreco::class);
         $app->delete('/{id}', TabelaPreco\DeleteTabelaPreco::class);
