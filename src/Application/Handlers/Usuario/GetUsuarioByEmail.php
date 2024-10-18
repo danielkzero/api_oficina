@@ -22,7 +22,8 @@ class GetUsuarioByEmail
             $queryParams = $request->getQueryParams();
             $id = $queryParams['email'];
 
-            $stmt = $this->pdo->prepare('SELECT 
+            $stmt = $this->pdo->prepare('SELECT
+                id, 
                 assinatura_email,
                 avatar,
                 email,

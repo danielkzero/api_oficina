@@ -34,12 +34,11 @@ class GetPedido
                     c.razao_social, c.nome_fantasia,
                     e.endereco, e.numero, e.complemento, e.bairro, e.cidade, e.estado, e.cep,
                     i.id AS item_id, i.quantidade, i.preco_tabela, i.ipi, i.observacoes, i.st, i.produto_id, i.excluido AS item_excluido,
-                    i.subtotal, i.preco_liquido, d.desconto AS item_desconto
+                    i.subtotal, i.preco_liquido, i.item_desconto 
                 FROM pedido p
                 LEFT JOIN cliente c ON c.id = p.cliente_id
                 LEFT JOIN pedido_endereco_entrega e ON p.id = e.pedido_id
                 LEFT JOIN pedido_item i ON p.id = i.pedido_id
-                LEFT JOIN pedido_item_desconto d ON i.id = d.pedido_item_id
                 LEFT JOIN usuario us ON us.id = p.criador_id
                 LEFT JOIN pedido_status sts ON sts.status = p.status
                 WHERE p.excluido = 0";

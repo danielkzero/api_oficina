@@ -24,23 +24,22 @@ class PostPedido
 
             // Insert Pedido
             $stmt = $this->pdo->prepare("
-                INSERT INTO pedido (cliente_id, status, condicao_pagamento, forma_pagamento_id, tipo_pedido_id, nome_contato, status_faturamento, observacoes, numero, data_criacao, ultima_alteracao, condicao_pagamento_id, data_emissao, total, criador_id)
-                VALUES (:cliente_id, :status, :condicao_pagamento, :forma_pagamento_id, :tipo_pedido_id, :nome_contato, :status_faturamento, :observacoes, :numero, NOW(), NOW(), :condicao_pagamento_id, :data_emissao, :total, :criador_id)
+                INSERT INTO pedido (cliente_id, cliente, representada, tipo_pedido, tabela_preco, vendedor, contato_cliente, observacoes, status, criador_id, total, data_emissao)
+                VALUES (:cliente_id, :cliente, :representada, :tipo_pedido, :tabela_preco, :vendedor, :contato_cliente, :observacoes, :status, :criador_id, :total, :data_emissao)
             ");
             $stmt->execute([
-                ':cliente_id' => $data['cliente_id'],
-                ':status' => $data['status'],
-                ':condicao_pagamento' => $data['condicao_pagamento'],
-                ':forma_pagamento_id' => $data['forma_pagamento_id'],
-                ':tipo_pedido_id' => $data['tipo_pedido_id'],
-                ':nome_contato' => $data['nome_contato'],
-                ':status_faturamento' => $data['status_faturamento'],
-                ':observacoes' => $data['observacoes'],
-                ':numero' => $data['numero'],
-                ':condicao_pagamento_id' => $data['condicao_pagamento_id'],
-                ':data_emissao' => $data['data_emissao'],
-                ':total' => $data['total'],
-                ':criador_id' => $data['criador_id']
+                ':cliente_id' => $data['cliente_id'] ?? null,
+                ':cliente' => $data['cliente'] ?? null,
+                ':representada' => $data['representada'] ?? null,
+                ':tipo_pedido' => $data['tipo_pedido'] ?? null,
+                ':tabela_preco' => $data['tabela_preco'] ?? null,
+                ':vendedor' => $data['vendedor'] ?? null,
+                ':contato_cliente' => $data['contato_cliente'] ?? null,
+                ':observacoes' => $data['observacoes'] ?? null,
+                ':status' => $data['status'] ?? null,
+                ':criador_id' => $data['criador_id'] ?? null,
+                ':total' => $data['total'] ?? null,
+                ':data_emissao' => $data['data_emissao'] ?? null,
             ]);
             $pedidoId = $this->pdo->lastInsertId();
 
