@@ -22,98 +22,81 @@ class PutPedido
         try {
             // Begin Transaction
             $this->pdo->beginTransaction();
-
             // Update Pedido
             $stmt = $this->pdo->prepare("
                 UPDATE pedido 
-                SET cliente_id = :cliente_id, status = :status, condicao_pagamento = :condicao_pagamento, forma_pagamento_id = :forma_pagamento_id, tipo_pedido_id = :tipo_pedido_id, nome_contato = :nome_contato, status_faturamento = :status_faturamento, observacoes = :observacoes, numero = :numero, ultima_alteracao = NOW(), condicao_pagamento_id = :condicao_pagamento_id, data_emissao = :data_emissao, total = :total, criador_id = :criador_id
+                SET 
+                    cliente = :cliente, cliente_id = :cliente_id, condicao_pagamento = :condicao_pagamento, contato_cliente = :contato_cliente, criador_id = :criador_id, 
+                    enderecos = :enderecos, excluido = :excluido, status = :status, id_tabela_preco = :id_tabela_preco, observacoes = :observacoes, representada = :representada, 
+                    status = :status, status_faturamento = :status_faturamento, tabela_preco = :tabela_preco, tipo_pedido = :tipo_pedido, total = :total, vendedor = :vendedor
                 WHERE id = :id
             ");
             $stmt->execute([
                 ':id' => $id,
+                ':cliente' => json_encode($data['cliente']),
                 ':cliente_id' => $data['cliente_id'],
+                ':condicao_pagamento' => json_encode($data['condicao_pagamento']),
+                ':contato_cliente' => json_encode($data['contato_cliente']),
+                ':criador_id' => $data['criador_id'],
+                ':enderecos' => json_encode($data['enderecos']),
+                ':excluido' => $data['excluido'],
                 ':status' => $data['status'],
-                ':condicao_pagamento' => $data['condicao_pagamento'],
-                ':forma_pagamento_id' => $data['forma_pagamento_id'],
-                ':tipo_pedido_id' => $data['tipo_pedido_id'],
-                ':nome_contato' => $data['nome_contato'],
-                ':status_faturamento' => $data['status_faturamento'],
+                ':id_tabela_preco' => $data['id_tabela_preco'],
                 ':observacoes' => $data['observacoes'],
-                ':numero' => $data['numero'],
-                ':condicao_pagamento_id' => $data['condicao_pagamento_id'],
-                ':data_emissao' => $data['data_emissao'],
+                ':representada' => json_encode($data['representada']),
+                ':status' => $data['status'],
+                ':status_faturamento' => $data['status_faturamento'],
+                ':tabela_preco' => $data['tabela_preco'],
+                ':tipo_pedido' => json_encode($data['tipo_pedido']),
                 ':total' => $data['total'],
-                ':criador_id' => $data['criador_id']
+                ':vendedor' => json_encode($data['vendedor'])
             ]);
-
-            // Delete old Endereços de Entrega
-            $stmt = $this->pdo->prepare("DELETE FROM pedido_endereco_entrega WHERE pedido_id = :pedido_id");
-            $stmt->execute([':pedido_id' => $id]);
-
-            // Insert new Endereços de Entrega
-            if (isset($data['enderecos'])) {
-                $stmt = $this->pdo->prepare("
-                    INSERT INTO pedido_endereco_entrega (pedido_id, endereco, numero, complemento, bairro, cidade, estado, cep)
-                    VALUES (:pedido_id, :endereco, :numero, :complemento, :bairro, :cidade, :estado, :cep)
-                ");
-                foreach ($data['enderecos'] as $endereco) {
-                    $stmt->execute([
-                        ':pedido_id' => $id,
-                        ':endereco' => $endereco['endereco'],
-                        ':numero' => $endereco['numero'],
-                        ':complemento' => $endereco['complemento'],
-                        ':bairro' => $endereco['bairro'],
-                        ':cidade' => $endereco['cidade'],
-                        ':estado' => $endereco['estado'],
-                        ':cep' => $endereco['cep']
-                    ]);
-                }
-            }
-
-            // Delete old Itens do Pedido
-            $stmt = $this->pdo->prepare("DELETE FROM pedido_item WHERE pedido_id = :pedido_id");
-            $stmt->execute([':pedido_id' => $id]);
 
             // Insert new Itens do Pedido
             if (isset($data['itens'])) {
                 $stmt = $this->pdo->prepare("
-                    INSERT INTO pedido_item (pedido_id, tipo_ipi, quantidade, preco_tabela, tabela_preco_id, ipi, observacoes, st, produto_id, excluido, subtotal, preco_liquido)
-                    VALUES (:pedido_id, :tipo_ipi, :quantidade, :preco_tabela, :tabela_preco_id, :ipi, :observacoes, :st, :produto_id, :excluido, :subtotal, :preco_liquido)
+                    INSERT INTO pedido_item (pedido_id, qtd_unitaria, quantidade, codigo, nome, st, ipi, 
+                    comissao, item_acrescimo, item_desconto, preco_liquido, preco_minimo, preco_tabela, subtotal, observacoes, excluido)
+                    VALUES (:pedido_id, :qtd_unitaria, :quantidade, :codigo, :nome, :st, :ipi, 
+                    :comissao, :item_acrescimo, :item_desconto, :preco_liquido, :preco_minimo, :preco_tabela, :subtotal, :observacoes, :excluido) 
+                    ON DUPLICATE KEY UPDATE 
+                    qtd_unitaria = VALUES(qtd_unitaria), 
+                    quantidade = VALUES(quantidade), 
+                    codigo = VALUES(codigo), 
+                    nome = VALUES(nome), 
+                    st = VALUES(st), 
+                    ipi = VALUES(ipi), 
+                    comissao = VALUES(comissao), 
+                    item_acrescimo = VALUES(item_acrescimo), 
+                    item_desconto = VALUES(item_desconto), 
+                    preco_liquido = VALUES(preco_liquido), 
+                    preco_minimo = VALUES(preco_minimo), 
+                    preco_tabela = VALUES(preco_tabela), 
+                    subtotal = VALUES(subtotal), 
+                    observacoes = VALUES(observacoes), 
+                    excluido = VALUES(excluido) 
                 ");
                 foreach ($data['itens'] as $item) {
                     $stmt->execute([
-                        ':pedido_id' => $id,
-                        ':tipo_ipi' => $item['tipo_ipi'],
+                        ':pedido_id' => $id,                  
+                        ':qtd_unitaria' => $item['qtd_unitaria'],
                         ':quantidade' => $item['quantidade'],
-                        ':preco_tabela' => $item['preco_tabela'],
                         ':tabela_preco_id' => $item['tabela_preco_id'],
-                        ':ipi' => $item['ipi'],
-                        ':observacoes' => $item['observacoes'],
-                        ':st' => $item['st'],
                         ':produto_id' => $item['produto_id'],
-                        ':excluido' => $item['excluido'],
+                        ':codigo' => $item['codigo'],
+                        ':nome' => $item['nome'],
+                        ':st' => $item['icms_destino'],
+                        ':ipi' => $item['ipi'],
+                        ':comissao' => $item['comissao'],
+                        ':item_acrescimo' => json_encode($item['item_acrescimo'] ?? []),
+                        ':item_desconto' => json_encode($item['item_desconto'] ?? []),
+                        ':preco_liquido' => $item['preco_liquido'],
+                        ':preco_minimo' => $item['preco_minimo'],
+                        ':preco_tabela' => $item['preco_tabela'],                        
                         ':subtotal' => $item['subtotal'],
-                        ':preco_liquido' => $item['preco_liquido']
+                        ':observacoes' => $item['observacoes'],
+                        ':excluido' => $item['excluido']
                     ]);
-                    $itemId = $this->pdo->lastInsertId();
-
-                    // Delete old Descontos dos Itens
-                    $stmt = $this->pdo->prepare("DELETE FROM pedido_item_desconto WHERE pedido_item_id = :pedido_item_id");
-                    $stmt->execute([':pedido_item_id' => $itemId]);
-
-                    // Insert new Descontos dos Itens
-                    if (isset($item['descontos'])) {
-                        $stmt = $this->pdo->prepare("
-                            INSERT INTO pedido_item_desconto (pedido_item_id, desconto)
-                            VALUES (:pedido_item_id, :desconto)
-                        ");
-                        foreach ($item['descontos'] as $desconto) {
-                            $stmt->execute([
-                                ':pedido_item_id' => $itemId,
-                                ':desconto' => $desconto
-                            ]);
-                        }
-                    }
                 }
             }
 
