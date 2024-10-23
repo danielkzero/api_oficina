@@ -45,6 +45,7 @@ class GetPedidoById
             'condicao_pagamento' => $pedido['condicao_pagamento'] == null ? [] : json_decode($pedido['condicao_pagamento']),
             'contato_cliente' => $pedido['contato_cliente'],
             'criador_id' => (int)$pedido['criador_id'],
+            'data_emissao' => $pedido['data_emissao'],
             'enderecos' => $pedido['enderecos'] == null ? [] : json_decode($pedido['enderecos']),
             'excluido' => (int)$pedido['excluido'],
             'status' => (string)$pedido['status'],
@@ -56,32 +57,34 @@ class GetPedidoById
             'tipo_pedido' => (string)$pedido['tipo_pedido'],
             'total' => (float)$pedido['total'],
             'vendedor' => $pedido['vendedor'] == null ? [] : json_decode($pedido['vendedor']),
-            'itens' => [],
+            'itens' => []
         ];
 
         foreach ($pedidos as $pedido) {
-            $resultado['itens'][] = [
-                'codigo' => (string)$pedido['codigo'],
-                'comissao' => (float)$pedido['comissao'],
-                'excluido' => (int)$pedido['excluido'],
-                'ipi' => (float)$pedido['ipi'],
-                'item_acrescimo' => json_decode($pedido['item_acrescimo']),
-                'item_desconto' => json_decode($pedido['item_desconto']),
-                'nome' => (string)$pedido['nome'],
-                'observacoes' => (string)$pedido['observacoes'],
-                'pedido_id' => (int)$pedido['pedido_id'],
-                'preco_liquido' => (float)$pedido['preco_liquido'],
-                'preco_minimo' => (float)$pedido['preco_minimo'],
-                'preco_tabela' => (float)$pedido['preco_tabela'],
-                'produto_id' => (int)$pedido['produto_id_1'],
-                'qtd_unitaria' => (int)$pedido['qtd_unitaria'],
-                'multiplo' => (int)$pedido['multiplo'],
-                'quantidade' => (int)$pedido['quantidade'],
-                'subtotal' => (float)$pedido['subtotal'],
-                'icms_destino' => (string)$pedido['st'],
-                'peso_bruto' => (string)$pedido['peso_bruto'],
-                'imagem_base64' => (string)$pedido['imagem_base64'] ?? null,
-            ];
+            if ((string)$pedido['codigo'] !== '') {
+                $resultado['itens'][] = [
+                    'codigo' => (string)$pedido['codigo'],
+                    'comissao' => (float)$pedido['comissao'],
+                    'excluido' => (int)$pedido['excluido'],
+                    'ipi' => (float)$pedido['ipi'],
+                    'item_acrescimo' => ($pedido['item_acrescimo'] !== null && $pedido['item_acrescimo'] !== '') ? json_decode($pedido['item_acrescimo']) : '',
+                    'item_desconto' => ($pedido['item_desconto'] !== null && $pedido['item_desconto'] !== '') ? json_decode($pedido['item_desconto']) : '',
+                    'nome' => (string)$pedido['nome'],
+                    'observacoes' => (string)$pedido['observacoes'],
+                    'pedido_id' => (int)$pedido['pedido_id'],
+                    'preco_liquido' => (float)$pedido['preco_liquido'],
+                    'preco_minimo' => (float)$pedido['preco_minimo'],
+                    'preco_tabela' => (float)$pedido['preco_tabela'],
+                    'produto_id' => (int)$pedido['produto_id_1'],
+                    'qtd_unitaria' => (int)$pedido['qtd_unitaria'],
+                    'multiplo' => (int)$pedido['multiplo'],
+                    'quantidade' => (int)$pedido['quantidade'],
+                    'subtotal' => (float)$pedido['subtotal'],
+                    'icms_destino' => (string)$pedido['st'],
+                    'peso_bruto' => (string)$pedido['peso_bruto'],
+                    'imagem_base64' => (string)$pedido['imagem_base64'] ?? null,
+                ];
+            }
         }
 
         return $response->withHeader('Content-Type', 'application/json')->withJson($resultado);

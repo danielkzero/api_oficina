@@ -30,7 +30,9 @@ class GetProdutoIdTabela
                     
                     (SELECT imagem_base64 FROM produto_imagem WHERE produto_id = p.id LIMIT 1) as imagem_base64,
 
-                    p.*, tp.nome as tabela_nome, tp.acrescimo, tp.desconto, tpp.preco, ist.* 
+                    p.*, tp.nome as tabela_nome, tp.acrescimo, tp.desconto, tpp.preco, 
+                    ist.codigo_ncm, ist.nome_excecao_fiscal, ist.estado_destino, ist.tipo_st,
+                    ist.valor_mva, ist.valor_pmc, ist.icms_credito, ist.icms_destino 
                     FROM produto p
                     LEFT JOIN tabela_preco_produto tpp ON p.id = tpp.produto_id
                     LEFT JOIN tabela_preco tp ON tpp.tabela_id = tp.id

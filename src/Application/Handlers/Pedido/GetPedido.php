@@ -28,20 +28,19 @@ class GetPedido
             $dataFinal = isset($queryParams['data_final']) ? $queryParams['data_final'] : null;
 
             // Construir a consulta SQL com base nos parâmetros
-            $sql = "
-                SELECT
-                    p.*, sts.descricao as sts_descricao, hex_rgb, auto_checked, us.nome as criador_nome, us.avatar as criador_avatar,
-                    c.razao_social, c.nome_fantasia,
-                    e.endereco, e.numero, e.complemento, e.bairro, e.cidade, e.estado, e.cep,
-                    i.id AS item_id, i.quantidade, i.preco_tabela, i.ipi, i.observacoes, i.st, i.produto_id, i.excluido AS item_excluido,
-                    i.subtotal, i.preco_liquido, i.item_desconto 
-                FROM pedido p
-                LEFT JOIN cliente c ON c.id = p.cliente_id
-                LEFT JOIN pedido_endereco_entrega e ON p.id = e.pedido_id
-                LEFT JOIN pedido_item i ON p.id = i.pedido_id
-                LEFT JOIN usuario us ON us.id = p.criador_id
-                LEFT JOIN pedido_status sts ON sts.status = p.status
-                WHERE p.excluido = 0";
+            $sql = "SELECT 
+                p.*, 
+                sts.descricao sts_descricao, 
+                hex_rgb, 
+                auto_checked, 
+                us.nome criador_nome, 
+                us.avatar criador_avatar, 
+                c.nome descricao_condicao_pagamento 
+            FROM pedido p 
+            LEFT JOIN usuario us ON us.id = p.criador_id
+            LEFT JOIN pedido_status sts ON sts.status = p.status 
+            LEFT JOIN condicao_pagamento c ON c.id = p.condicao_pagamento 
+            WHERE p.excluido = 0";
 
             // Condições opcionais
             if (!empty($busca)) {
@@ -63,7 +62,8 @@ class GetPedido
             $sql .= ' ORDER BY p.id DESC LIMIT :limit OFFSET :offset';
 
             $stmt = $this->pdo->prepare($sql);
-
+            
+            //return $response->withHeader('Content-Type', 'application/json')->withJson( $sql);
             
 
             // Vincular os parâmetros
@@ -93,57 +93,29 @@ class GetPedido
                 if (!isset($pedidosOrganizados[$pedido['id']])) {
                     $pedidosOrganizados[$pedido['id']] = [
                         'id' => $pedido['id'],
-                        'cliente_id' => $pedido['cliente_id'],
-                        'razao_social' => $pedido['razao_social'],
-                        'nome_fantasia' => $pedido['nome_fantasia'],
-                        'status' => $pedido['status'],
+                        'cliente' => $pedido['cliente'] == null ? [] : json_decode($pedido['cliente']),
+                        'cliente_id' => (int)$pedido['cliente_id'],
+                        'condicao_pagamento' => $pedido['condicao_pagamento'] == null ? [] : $pedido['condicao_pagamento'],
+                        'descricao_condicao_pagamento' => $pedido['descricao_condicao_pagamento'] == null ? [] : $pedido['descricao_condicao_pagamento'],
+                        'contato_cliente' => $pedido['contato_cliente'],
+                        'criador_id' => (int)$pedido['criador_id'],
+                        'data_emissao' => $pedido['data_emissao'],
+                        'enderecos' => $pedido['enderecos'] == null ? [] : json_decode($pedido['enderecos']),
+                        'excluido' => (int)$pedido['excluido'],
+                        'status' => (string)$pedido['status'],
+                        'id_tabela_preco' => (int)$pedido['id_tabela_preco'],
+                        'observacoes' => (string)$pedido['observacoes'],
+                        'representada' => $pedido['representada'] == null ? [] : json_decode($pedido['representada']),
+                        'status_faturamento' => (string)$pedido['status_faturamento'],
+                        'tabela_preco' => (string)$pedido['tabela_preco'],
+                        'tipo_pedido' => (string)$pedido['tipo_pedido'],
+                        'total' => (float)$pedido['total'],
+                        'vendedor' => $pedido['vendedor'] == null ? [] : json_decode($pedido['vendedor']),
                         'sts_descricao' => $pedido['sts_descricao'],
                         'hex_rgb' => $pedido['hex_rgb'],
-                        'condicao_pagamento' => $pedido['condicao_pagamento'],
-                        'forma_pagamento_id' => $pedido['forma_pagamento_id'],
-                        'tipo_pedido_id' => $pedido['tipo_pedido_id'],
-                        'nome_contato' => $pedido['nome_contato'],
-                        'status_faturamento' => $pedido['status_faturamento'],
-                        'observacoes' => $pedido['observacoes'],
-                        'numero' => $pedido['numero'],
-                        'cadastrado_em' => $pedido['cadastrado_em'],
-                        'ultima_alteracao' => $pedido['ultima_alteracao'],
-                        'condicao_pagamento_id' => $pedido['condicao_pagamento_id'],
-                        'data_emissao' => $pedido['data_emissao'],
-                        'total' => $pedido['total'],
                         'criador_id' => $pedido['criador_id'],
                         'criador_nome' => $pedido['criador_nome'],
                         'criador_avatar' => $pedido['criador_avatar'],
-                        'enderecos' => [],
-                        'itens' => []
-                    ];
-                }
-
-                if ($pedido['endereco']) {
-                    $pedidosOrganizados[$pedido['id']]['enderecos'][] = [
-                        'endereco' => $pedido['endereco'],
-                        'numero' => $pedido['numero'],
-                        'complemento' => $pedido['complemento'],
-                        'bairro' => $pedido['bairro'],
-                        'cidade' => $pedido['cidade'],
-                        'estado' => $pedido['estado'],
-                        'cep' => $pedido['cep'],
-                    ];
-                }
-
-                if ($pedido['item_id']) {
-                    $pedidosOrganizados[$pedido['id']]['itens'][] = [
-                        'id' => $pedido['item_id'],
-                        'quantidade' => $pedido['quantidade'],
-                        'preco_tabela' => $pedido['preco_tabela'],
-                        'ipi' => $pedido['ipi'],
-                        'observacoes' => $pedido['observacoes'],
-                        'st' => $pedido['st'],
-                        'produto_id' => $pedido['produto_id'],
-                        'excluido' => $pedido['item_excluido'],
-                        'subtotal' => $pedido['subtotal'],
-                        'preco_liquido' => $pedido['preco_liquido'],
-                        'descontos' => $pedido['item_desconto'] ? [$pedido['item_desconto']] : []
                     ];
                 }
             }
@@ -193,7 +165,7 @@ class GetPedido
             return $response
                 ->withHeader('Content-Type', 'application/json')
                 ->withJson([
-                    'data' => array_values($pedidosOrganizados),
+                    'data' => $pedidosOrganizados,
                     'total' => $total
                 ]);
         } catch (\Exception $e) {
@@ -210,3 +182,5 @@ class GetPedido
         }
     }
 }
+
+

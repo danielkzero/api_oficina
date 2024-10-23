@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Application\Handlers\Pedido;
 
 use Psr\Http\Message\ResponseInterface as Response;
@@ -33,36 +34,37 @@ class PutPedido
             ");
             $stmt->execute([
                 ':id' => $id,
-                ':cliente' => json_encode($data['cliente']),
-                ':cliente_id' => $data['cliente_id'],
-                ':condicao_pagamento' => json_encode($data['condicao_pagamento']),
-                ':contato_cliente' => json_encode($data['contato_cliente']),
-                ':criador_id' => $data['criador_id'],
-                ':enderecos' => json_encode($data['enderecos']),
-                ':excluido' => $data['excluido'],
-                ':status' => $data['status'],
-                ':id_tabela_preco' => $data['id_tabela_preco'],
-                ':observacoes' => $data['observacoes'],
-                ':representada' => json_encode($data['representada']),
-                ':status' => $data['status'],
-                ':status_faturamento' => $data['status_faturamento'],
-                ':tabela_preco' => $data['tabela_preco'],
-                ':tipo_pedido' => json_encode($data['tipo_pedido']),
-                ':total' => $data['total'],
-                ':vendedor' => json_encode($data['vendedor'])
+                ':cliente' => ($data['cliente'] !== null && $data['cliente'] !== '') ? json_encode($data['cliente']) : null,
+                ':cliente_id' => $data['cliente_id'] ?? null,
+                ':condicao_pagamento' => ($data['condicao_pagamento'] !== null && $data['condicao_pagamento'] !== '') ? json_encode($data['condicao_pagamento']) : null,
+                ':contato_cliente' => ($data['contato_cliente'] !== null && $data['contato_cliente'] !== '') ? json_encode($data['contato_cliente']) : null,
+                ':criador_id' => $data['criador_id'] ?? null,
+                ':enderecos' => ($data['enderecos'] !== null && $data['enderecos'] !== '') ? json_encode($data['enderecos']) : null,
+                ':excluido' => $data['excluido'] ?? null,
+                ':status' => $data['status'] ?? null,
+                ':id_tabela_preco' => $data['id_tabela_preco'] ?? null,
+                ':observacoes' => $data['observacoes'] ?? null,
+                ':representada' => ($data['representada'] !== null && $data['representada'] !== '') ? json_encode($data['representada']) : null,
+                ':status' => $data['status'] ?? 'O',
+                ':status_faturamento' => $data['status_faturamento'] ?? null,
+                ':tabela_preco' => $data['tabela_preco'] ?? null,
+                ':tipo_pedido' => ($data['tipo_pedido'] !== null && $data['tipo_pedido'] !== '') ? $data['tipo_pedido'] : null,
+                ':total' => $data['total'] ?? null,
+                ':vendedor' => ($data['vendedor'] !== null && $data['vendedor'] !== '') ? json_encode($data['vendedor']) : null 
             ]);
 
             // Insert new Itens do Pedido
             if (isset($data['itens'])) {
                 $stmt = $this->pdo->prepare("
-                    INSERT INTO pedido_item (pedido_id, qtd_unitaria, quantidade, codigo, nome, st, ipi, 
-                    comissao, item_acrescimo, item_desconto, preco_liquido, preco_minimo, preco_tabela, subtotal, observacoes, excluido)
-                    VALUES (:pedido_id, :qtd_unitaria, :quantidade, :codigo, :nome, :st, :ipi, 
-                    :comissao, :item_acrescimo, :item_desconto, :preco_liquido, :preco_minimo, :preco_tabela, :subtotal, :observacoes, :excluido) 
+                    INSERT INTO pedido_item (id, pedido_id, qtd_unitaria, quantidade, produto_id, codigo, nome, st, ipi, 
+                    comissao, item_acrescimo, item_desconto, preco_liquido, preco_minimo, preco_tabela, subtotal, excluido)
+                    VALUES (:id, :pedido_id, :qtd_unitaria, :quantidade, :produto_id, :codigo, :nome, :st, :ipi, 
+                    :comissao, :item_acrescimo, :item_desconto, :preco_liquido, :preco_minimo, :preco_tabela, :subtotal, :excluido) 
                     ON DUPLICATE KEY UPDATE 
                     qtd_unitaria = VALUES(qtd_unitaria), 
                     quantidade = VALUES(quantidade), 
-                    codigo = VALUES(codigo), 
+                    produto_id = VALUES(produto_id), 
+                    codigo = VALUES(codigo),
                     nome = VALUES(nome), 
                     st = VALUES(st), 
                     ipi = VALUES(ipi), 
@@ -73,15 +75,29 @@ class PutPedido
                     preco_minimo = VALUES(preco_minimo), 
                     preco_tabela = VALUES(preco_tabela), 
                     subtotal = VALUES(subtotal), 
-                    observacoes = VALUES(observacoes), 
                     excluido = VALUES(excluido) 
                 ");
+
+                $stmtCheck = $this->pdo->prepare("
+                    SELECT * 
+                    FROM pedido_item 
+                    WHERE pedido_id = :pedido_id AND produto_id = :produto_id AND excluido = 0
+                ");
+
                 foreach ($data['itens'] as $item) {
+                    $stmtCheck->execute([
+                        ':pedido_id' => $id,
+                        ':produto_id' => $item['produto_id']
+                    ]);
+
+                    $existingItem = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+
                     $stmt->execute([
-                        ':pedido_id' => $id,                  
+                        ':id' => $existingItem ? $existingItem['id'] : null,
+                        ':pedido_id' => $id,
                         ':qtd_unitaria' => $item['qtd_unitaria'],
                         ':quantidade' => $item['quantidade'],
-                        ':tabela_preco_id' => $item['tabela_preco_id'],
+                        //':tabela_preco_id' => $item['tabela_preco_id'],
                         ':produto_id' => $item['produto_id'],
                         ':codigo' => $item['codigo'],
                         ':nome' => $item['nome'],
@@ -92,9 +108,8 @@ class PutPedido
                         ':item_desconto' => json_encode($item['item_desconto'] ?? []),
                         ':preco_liquido' => $item['preco_liquido'],
                         ':preco_minimo' => $item['preco_minimo'],
-                        ':preco_tabela' => $item['preco_tabela'],                        
+                        ':preco_tabela' => $item['preco_tabela'],
                         ':subtotal' => $item['subtotal'],
-                        ':observacoes' => $item['observacoes'],
                         ':excluido' => $item['excluido']
                     ]);
                 }
@@ -103,7 +118,6 @@ class PutPedido
             // Commit Transaction
             $this->pdo->commit();
             return $response->withHeader('Content-Type', 'application/json')->withJson(['status' => 'Pedido atualizado com sucesso']);
-
         } catch (\Exception $e) {
             // Rollback Transaction
             $this->pdo->rollBack();

@@ -193,7 +193,7 @@ return function (App $app) use ($validarTokenMiddleware) {
         $app->post('', Pedido\PostPedido::class);
         $app->put('/{id}', Pedido\PutPedido::class);
         $app->delete('/{id}', Pedido\DeletePedido::class);
-    })->add($validarTokenMiddleware);
+    });
 
     $app->group('/pedido_status', function ($app) {
         $app->get('', PedidoStatus\GetPedidoStatus::class);
