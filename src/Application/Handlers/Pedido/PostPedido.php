@@ -36,7 +36,7 @@ class PostPedido
                 ':vendedor' => $data['vendedor'] ?? null,
                 ':contato_cliente' => $data['contato_cliente'] ?? null,
                 ':observacoes' => $data['observacoes'] ?? null,
-                ':status' => $data['status'] ?? null,
+                ':status' => $data['status'] ?? 'O',
                 ':criador_id' => $data['criador_id'] ?? null,
                 ':total' => $data['total'] ?? null,
                 ':data_emissao' => $data['data_emissao'] ?? null,
