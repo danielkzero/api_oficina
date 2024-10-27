@@ -21,9 +21,12 @@ class GetPedidoById
 
         $stmt = $this->pdo->prepare("
             SELECT p.*, i.*, prd.multiplo, prd.id produto_id_1, prd.peso_bruto, 
-            (SELECT imagem_base64 FROM produto_imagem pri WHERE pri.produto_id = prd.id LIMIT 1) as imagem_base64 
+            (SELECT imagem_base64 FROM produto_imagem pri WHERE pri.produto_id = prd.id LIMIT 1) as imagem_base64, 
+            sts.descricao sts_descricao, p.status,
+            hex_rgb
             FROM pedido p
             LEFT JOIN pedido_item i ON p.id = i.pedido_id
+            LEFT JOIN pedido_status sts ON sts.status = p.status 
             LEFT JOIN produto prd ON prd.codigo = i.codigo AND prd.excluido = 0 
             WHERE p.id = :id AND p.excluido = 0 ORDER BY p.id DESC
         ");
@@ -57,6 +60,8 @@ class GetPedidoById
             'tipo_pedido' => (string)$pedido['tipo_pedido'],
             'total' => (float)$pedido['total'],
             'vendedor' => $pedido['vendedor'] == null ? [] : json_decode($pedido['vendedor']),
+            'sts_descricao' => $pedido['sts_descricao'] ?? null,
+            'hex_rgb' => $pedido['hex_rgb'] ?? null,
             'itens' => []
         ];
 
