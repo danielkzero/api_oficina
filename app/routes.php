@@ -28,6 +28,7 @@ use App\Application\Handlers\PedidoStatus;
 use App\Application\Handlers\Equipe;
 use App\Application\Handlers\Empresa;
 use App\Application\Handlers\ConfiguracaoSistema;
+use App\Application\Handlers\Relatorio;
 
 use Psr\Container\ContainerInterface;
 use Slim\Exception\HttpUnauthorizedException;
@@ -193,6 +194,10 @@ return function (App $app) use ($validarTokenMiddleware) {
         $app->post('', Pedido\PostPedido::class);
         $app->put('/{id}', Pedido\PutPedido::class);
         $app->delete('/{id}', Pedido\DeletePedido::class);
+    });
+
+    $app->group('/relatorio/pedido', function ($app) {
+        $app->get('/semanal', Relatorio\Pedido\GetRelatorioSemanal::class);
     });
 
     $app->group('/pedido_status', function ($app) {
