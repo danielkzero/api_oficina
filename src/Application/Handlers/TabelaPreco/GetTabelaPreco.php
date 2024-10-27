@@ -24,10 +24,14 @@ class GetTabelaPreco
             $offset = isset($queryParams['offset']) ? (int)$queryParams['offset'] : 0;
 
             // Construir a consulta SQL para as tabelas de preços
-            $sql = 'SELECT tp.*, tpp.preco 
+            /*$sql = 'SELECT tp.*, tpp.preco 
                     FROM tabela_preco tp
                     LEFT JOIN tabela_preco_produto tpp ON tp.id = tpp.tabela_id
-                    WHERE tp.excluido = 0';
+                    WHERE tp.excluido = 0';*/
+
+            $sql = 'SELECT tp.* 
+                FROM tabela_preco tp
+                WHERE tp.excluido = 0';
 
             if (!empty($busca)) {
                 $sql .= ' AND (tp.nome LIKE :busca OR tp.tipo LIKE :busca)';
