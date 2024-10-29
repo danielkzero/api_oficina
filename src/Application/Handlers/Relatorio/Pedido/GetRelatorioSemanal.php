@@ -26,7 +26,7 @@ class GetRelatorioSemanal
                 FROM 
                     pedido
                 WHERE 
-                    data_emissao >= CURDATE() - INTERVAL 7 DAY 
+                    data_emissao >= CURDATE() - INTERVAL 1 MONTH 
                     AND excluido = 0
                 GROUP BY 
                     data_emissao

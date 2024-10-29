@@ -24,8 +24,8 @@ class PostPedido
 
             // Insert Pedido
             $stmt = $this->pdo->prepare("
-                INSERT INTO pedido (cliente_id, cliente, representada, tipo_pedido, tabela_preco, vendedor, contato_cliente, observacoes, status, criador_id, total, data_emissao)
-                VALUES (:cliente_id, :cliente, :representada, :tipo_pedido, :tabela_preco, :vendedor, :contato_cliente, :observacoes, :status, :criador_id, :total, :data_emissao)
+                INSERT INTO pedido (cliente_id, cliente, representada, tipo_pedido, tabela_preco, vendedor, contato_cliente, observacoes, status, status_faturamento, criador_id, total, data_emissao)
+                VALUES (:cliente_id, :cliente, :representada, :tipo_pedido, :tabela_preco, :vendedor, :contato_cliente, :observacoes, :status, :status_faturamento, :criador_id, :total, :data_emissao)
             ");
             $stmt->execute([
                 ':cliente_id' => $data['cliente_id'] ?? null,
@@ -37,6 +37,7 @@ class PostPedido
                 ':contato_cliente' => $data['contato_cliente'] ?? null,
                 ':observacoes' => $data['observacoes'] ?? null,
                 ':status' => $data['status'] ?? 'O',
+                ':status_faturamento' => $data['status_faturamento'] ?? 'O',
                 ':criador_id' => $data['criador_id'] ?? null,
                 ':total' => $data['total'] ?? null,
                 ':data_emissao' => $data['data_emissao'] ?? null,

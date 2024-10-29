@@ -30,15 +30,17 @@ class GetPedido
             // Construir a consulta SQL com base nos parâmetros
             $sql = "SELECT 
                 p.*, 
+                st.descricao st_descricao, 
                 sts.descricao sts_descricao, 
-                hex_rgb, 
-                auto_checked, 
+                st.hex_rgb st_hex_rgb, 
+                sts.hex_rgb, 
                 us.nome criador_nome, 
                 us.avatar criador_avatar, 
                 c.nome descricao_condicao_pagamento 
             FROM pedido p 
             LEFT JOIN usuario us ON us.id = p.criador_id
-            LEFT JOIN pedido_status sts ON sts.status = p.status 
+            LEFT JOIN pedido_status st ON st.status = p.status_faturamento 
+            LEFT JOIN pedido_status_sinc sts ON sts.status = p.status 
             LEFT JOIN condicao_pagamento c ON c.id = p.condicao_pagamento 
             WHERE p.excluido = 0";
 
