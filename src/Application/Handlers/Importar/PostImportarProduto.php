@@ -20,79 +20,104 @@ class PostImportarProduto
     public function __invoke(Request $request, Response $response, $args)
     {
         try {
-            // Capturar o valor do campo "option" enviado no FormData
-            $parsedBody = $request->getParsedBody();
-            $option = isset($parsedBody['option']) ? $parsedBody['option'] : null;
-
-            // Verificar se o valor do option foi enviado
-            if (!$option) {
-                throw new Exception("Nenhum valor 'option' enviado.", 400);
-            }
-
-            // Agora você pode usar o valor de $option como quiser no seu código
-            // Exemplo: logar o valor ou passar para outra lógica
-            error_log("Valor de option: " . $option);
-
-            // Verifique se um arquivo foi enviado
             $uploadedFiles = $request->getUploadedFiles();
-            if (!isset($uploadedFiles['files'])) {  // Mudança de 'file' para 'files'
+            if (!isset($uploadedFiles['files'])) {
                 throw new Exception("Nenhum arquivo enviado.", 400);
             }
 
-            // Lidar com o envio de múltiplos arquivos
-            $arquivos = $uploadedFiles['files']; // Obtém o array de arquivos enviados
+            $arquivos = $uploadedFiles['files'];
 
             foreach ($arquivos as $uploadedFile) {
                 if ($uploadedFile->getError() !== UPLOAD_ERR_OK) {
                     throw new Exception("Erro ao carregar o arquivo.", 400);
                 }
 
-                // Caminho temporário do arquivo enviado
                 $filePath = $uploadedFile->getStream()->getMetadata('uri');
-
-                // Carregar a planilha usando PhpSpreadsheet
                 $spreadsheet = IOFactory::load($filePath);
                 $worksheet = $spreadsheet->getActiveSheet();
 
-                if ($option === 'substituir') {
-                    $stmt = $this->pdo->prepare("DELETE FROM produto_bkp");
-                    $stmt->execute();
+                // Captura os cabeçalhos das colunas
+                $headerRow = $worksheet->getRowIterator(1, 1)->current();
+                $headerCells = $headerRow->getCellIterator();
+                $headerCells->setIterateOnlyExistingCells(false);
+
+                $headers = [];
+                foreach ($headerCells as $cell) {
+                    $headers[] = $cell->getValue();
                 }
 
-                // Iterar pelas linhas da planilha
+                // Iterar pelas linhas da planilha (começando da segunda)
                 foreach ($worksheet->getRowIterator(2) as $row) {
                     $cellIterator = $row->getCellIterator();
                     $cellIterator->setIterateOnlyExistingCells(false);
 
-                    // Extraindo os dados da linha
                     $rowData = [];
                     foreach ($cellIterator as $cell) {
                         $rowData[] = $cell->getCalculatedValue();
                     }
 
-                    // Mapear as colunas da planilha aos campos do banco de dados
-                    $codigo = $rowData[0];
-                    $nome = $rowData[1];
-                    $codigo_ncm = $rowData[5];
-                    $preco_tabela = $rowData[2];
+                    return $response->withHeader('Content-Type', 'application/json')->withJson(
+                        [
+                            'linhas' => $rowData,
+                            'cabeçalhos' => $headers
+                        ], 201);
 
-                    // Inserir os dados no banco de dados
-                    $stmt = $this->pdo->prepare("
-                        INSERT INTO produto_bkp (codigo, nome, codigo_ncm, preco_tabela)
-                        VALUES (:codigo, :nome, :codigo_ncm, :preco_tabela)
-                        ON DUPLICATE KEY UPDATE nome = :nome, codigo_ncm = :codigo_ncm, preco_tabela = :preco_tabela
-                    ");
-                    $stmt->bindParam(':codigo', $codigo);
-                    $stmt->bindParam(':nome', $nome);
-                    $stmt->bindParam(':codigo_ncm', $codigo_ncm);
-                    $stmt->bindParam(':preco_tabela', $preco_tabela);
+                    // Associar cabeçalhos às células correspondentes
+                    $data = array_combine($headers, $rowData);
 
-                    // Executar a inserção no banco de dados
-                    $stmt->execute();
+                    // Processar colunas de preços (nomes dinâmicos)
+                    foreach ($headers as $header) {
+                        if (stripos($header, 'Preço de Tabela') !== false) {
+                            $nomeTabela = $header;
+
+                            $stmt = $this->pdo->prepare("
+                                INSERT INTO tabela_preco (nome)
+                                SELECT :nome
+                                WHERE NOT EXISTS (SELECT 1 FROM tabela_preco WHERE nome = :nome)
+                            ");
+                            $stmt->bindParam(':nome', $nomeTabela);
+                            $stmt->execute();
+                        }
+                    }
+
+                    // Processar categorias
+                    $categorias = [
+                        $data['categoria_principal'] ?? null,
+                        $data['subcategoria_nivel2'] ?? null,
+                        $data['subcategoria_nivel3'] ?? null,
+                    ];
+
+                    foreach ($categorias as $nomeCategoria) {
+                        if ($nomeCategoria !== null) {
+                            $stmt = $this->pdo->prepare("
+                                INSERT INTO produto_categoria (nome)
+                                SELECT :nome
+                                WHERE NOT EXISTS (SELECT 1 FROM produto_categoria WHERE nome = :nome)
+                            ");
+                            $stmt->bindParam(':nome', $nomeCategoria);
+                            $stmt->execute();
+                        }
+                    }
+
+                    // Inserir produto
+                    $codigo = $data['codigo'] ?? null;
+                    $nomeProduto = $data['nome'] ?? null;
+
+                    return $response->withHeader('Content-Type', 'application/json')->withJson(['status' => $codigo], 201);
+
+                    if ($codigo && $nomeProduto) {
+                        $stmt = $this->pdo->prepare("
+                            INSERT INTO produto (codigo, nome)
+                            VALUES (:codigo, :nome)
+                            ON DUPLICATE KEY UPDATE nome = :nome
+                        ");
+                        $stmt->bindParam(':codigo', $codigo);
+                        $stmt->bindParam(':nome', $nomeProduto);
+                        $stmt->execute();
+                    }
                 }
             }
 
-            // Retornar sucesso
             return $response->withHeader('Content-Type', 'application/json')->withJson(['status' => 'success'], 201);
         } catch (Exception $e) {
             return $response->withStatus($e->getCode() ?: 500)
