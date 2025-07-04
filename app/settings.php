@@ -23,9 +23,9 @@ return function (ContainerBuilder $containerBuilder) {
                 "db" => [
                     'driver' => 'mysql',
                     'host' => 'localhost',
-                    'database' => 'u616198849_oficina',
-                    'username' => 'u616198849_oficina',
-                    'password' => 'Oficina#123',
+                    'database' => 'modest',
+                    'username' => 'root',
+                    'password' => '100#Senha',
                     'charset' => 'utf8mb4',
                     'collation' => 'utf8mb4_unicode_ci',
                     'flags' => [
